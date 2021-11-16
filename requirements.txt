@@ -12,3 +12,4 @@ google-cloud-logging
 tensorflow-cpu
 tensorflow-cpu 
 Pillow
+flask_ngrok

@@ -45,16 +45,16 @@ class ImageService:
     @classmethod
     def line_user_upload_image(cls, event):
 
-        # 取出照片
+        # 取出照片，設定照片存檔名為event.message.id，檔名存在temp_file_path
         image_blob = cls.line_bot_api.get_message_content(event.message.id)
         temp_file_path = f"""{event.message.id}.png"""
 
-        #
+        # 開啟照片準備寫入
         with open(temp_file_path, 'wb') as fd:
             for chunk in image_blob.iter_content():
                 fd.write(chunk)
 
-        # 上傳至照片暫存檔bucket: temp_food_image_mvp
+        # 上傳至照片暫存檔bucket: temp_food_image_mvp，這部分可以成功運作
         storage_client = storage.Client()
         bucket_name = os.environ['USER_INFO_TEMP_BUCKET_NAME']
         destination_blob_name = f'{event.source.user_id}/image/{event.message.id}.png'
@@ -64,13 +64,12 @@ class ImageService:
 
         # 載入模型Label
         '''
-        載入類別列表
+        載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
         '''
         class_dict = {}
-        with open('converted_savedmodel/labels.txt') as f:
+        with open('converted_savedmodel/labels.txt', encoding="utf-8") as f:
             for line in f:
                 (key, val) = line.split()
-
                 class_dict[int(key)] = val
 
         # 載入模型
@@ -80,7 +79,8 @@ class ImageService:
         # Load the model
         # model = tensorflow.keras.models.load_model('converted_savedmodel/model.savedmodel')
 
-        # 圖片預測，
+        # 圖片預測，設定一個result_tag變數來存辨識結果
+        result_tag = ""
         data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
         image = Image.open(temp_file_path)
         size = (224, 224)
@@ -108,24 +108,27 @@ class ImageService:
                 event.reply_token,
                 result_message_array
             )
+            result_tag = class_dict.get(max_probability_item_index)
+            # print(result_tag)
         else:
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(f"""圖片無法辨認，圖片已上傳，請期待未來的AI服務！""")
+                TextSendMessage(f"""照片目前無法辨認，已上傳雲端資料庫，敬請期待未來的AI服務！""")
             )
+            result_tag = "無法辨認"
+
 
         # 存照片到訓練資料收集的Bucket裡面：food-image-mvp
-        with open(temp_file_path, 'wb') as fd:
-            for chunk in image_blob.iter_content():
-                fd.write(chunk)
-
-        # 上傳至bucket
         storage_client = storage.Client()
         bucket_name = os.environ['FOOD_IMAGE_BUCKET_NAME']
-        destination_blob_name = f'{event.source.user_id}/image/{class_dict.get(max_probability_item_index)}-{event.message.id}.png'
+        # 目的地不分使用者，直接存在一起
+        destination_blob_name = f'image_uploaded/{result_tag}_{event.message.id}.png'
+        # 存訓練照片的桶子裡面，也依照user id來開資料夾
+        # destination_blob_name = f'{event.source.user_id}/image/{result_tag}_{event.message.id}.png'
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(temp_file_path)
+        # print(destination_blob_name)
 
         # 移除本地檔案
         os.remove(temp_file_path)
