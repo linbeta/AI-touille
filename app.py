@@ -8,6 +8,8 @@ from flask import Flask, request, abort
 
 from flask_cors import CORS
 
+# 外部連結自動生成套件
+from flask_ngrok import run_with_ngrok
 
 from linebot.exceptions import (
     InvalidSignatureError
@@ -28,7 +30,7 @@ import os
 line_bot_api = LineBotApi(
     channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(channel_secret=os.environ["LINE_CHANNEL_SECRET"])
-
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
 
 # 載入Follow事件
 from linebot.models.events import (
@@ -52,6 +54,9 @@ bot_event_logger.setLevel(logging.INFO)
 bot_event_logger.addHandler(bot_event_handler)
 
 app = Flask(__name__)
+# 底下兩行本地端跑ngrok時用
+# app.debug = True
+# run_with_ngrok(app)
 
 
 @app.route('/test')
@@ -125,4 +130,7 @@ def get_user():
 
 
 if __name__ == "__main__":
+    # 本地跑ngrok用
+    # app.run()
+    # 上線版用
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
