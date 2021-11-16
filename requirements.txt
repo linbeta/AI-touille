@@ -10,4 +10,5 @@ pandas
 gunicorn
 google-cloud-logging
 tensorflow-cpu
+tensorflow-cpu 
 Pillow
