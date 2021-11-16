@@ -27,13 +27,13 @@ gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/ai-touille:0.0.1
 
 查看映像檔及版本號路徑如以下截圖所示：
 
-![imag](./images for readme/cloud_run.png)
+![imag](https://github.com/linbeta/AI-touille/blob/main/images%20for%20readme/cloud_run.png)
 
-![imag](./images for readme/edit_and_deploy_new_version.png)
+![imag](https://github.com/linbeta/AI-touille/blob/main/images%20for%20readme/edit_and_deploy_new_version.png)
 
-![imag](./images for readme/select.png)
+![imag](https://github.com/linbeta/AI-touille/blob/main/images%20for%20readme/select.png)
 
-![imag](./images for readme/check_version.png)
+![imag](https://github.com/linbeta/AI-touille/blob/main/images%20for%20readme/check_version.png)
 
 
 
