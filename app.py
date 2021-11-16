@@ -1,3 +1,5 @@
+####安裝套件  pip3 install -r requirements.txt  #######
+
 import sys
 import os
 curPath = os.path.abspath(os.path.dirname(__file__))
