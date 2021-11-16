@@ -54,7 +54,7 @@ class ImageService:
             for chunk in image_blob.iter_content():
                 fd.write(chunk)
 
-        # 上傳至bucket
+        # 上傳至照片暫存檔bucket: temp_food_image_mvp
         storage_client = storage.Client()
         bucket_name = os.environ['USER_INFO_TEMP_BUCKET_NAME']
         destination_blob_name = f'{event.source.user_id}/image/{event.message.id}.png'
@@ -80,7 +80,7 @@ class ImageService:
         # Load the model
         # model = tensorflow.keras.models.load_model('converted_savedmodel/model.savedmodel')
 
-        # 圖片預測
+        # 圖片預測，
         data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
         image = Image.open(temp_file_path)
         size = (224, 224)
@@ -100,7 +100,7 @@ class ImageService:
         max_probability_item_index = np.argmax(prediction[0])
 
         # 將預測值拿去尋找line_message
-        # 並依照該line_message，進行消息回覆
+        # 並依照該line_message，進行消息回覆，result_message_array是回傳給user的文字訊息(來自json檔)
         if prediction.max() > 0.6:
             result_message_array = detect_json_array_to_new_message_array(
                 "line_message_json/"+class_dict.get(max_probability_item_index)+".json")
