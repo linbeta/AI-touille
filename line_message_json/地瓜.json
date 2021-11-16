@@ -1,4 +1,7 @@
-{
+[{
     "type": "text",
     "text": "地瓜"
-  }
+  },{
+    "type": "uri",
+    "uri": "https://icook.tw/recipes/397498"
+  }]
