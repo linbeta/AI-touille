@@ -1,3 +1,11 @@
+####安裝套件  pip3 install -r requirements.txt  #######
+
+## ========== 設定line_bot  ==========
+import os
+channel_access_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
+channel_secret = os.environ["LINE_CHANNEL_SECRET"]
+
+
 import sys
 import os
 curPath = os.path.abspath(os.path.dirname(__file__))
@@ -7,6 +15,7 @@ sys.path.append(rootPath)
 from flask import Flask, request, abort
 
 from flask_cors import CORS
+
 
 # 外部連結自動生成套件
 from flask_ngrok import run_with_ngrok
@@ -27,10 +36,12 @@ from linebot import (
     LineBotApi, WebhookHandler
 )
 import os
+
 line_bot_api = LineBotApi(
     channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(channel_secret=os.environ["LINE_CHANNEL_SECRET"])
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
+
 
 # 載入Follow事件
 from linebot.models.events import (
@@ -48,8 +59,9 @@ from google.cloud.logging.handlers import CloudLoggingHandler
 client = google.cloud.logging.Client()
 
 # 建立line event log，用來記錄line event
-bot_event_handler = CloudLoggingHandler(client, name="ncu_bot_event")
-bot_event_logger = logging.getLogger('ncu_bot_event')
+bot_event_handler = CloudLoggingHandler(client, name="AI-touille_bot_event")
+bot_event_logger = logging.getLogger('AI-touille_bot_event')
+
 bot_event_logger.setLevel(logging.INFO)
 bot_event_logger.addHandler(bot_event_handler)
 

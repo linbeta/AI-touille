@@ -1,5 +1,16 @@
 # 環境設定說明
 
+### 安裝套件  
+
+windows電腦使用以下指令安裝環境
+```
+pip install -r requirements.txt
+```
+macOS或是GCP上要是無法操作請用
+```
+pip3 install -r requirements.txt
+```
+
 ### 環境變數(Environment Variables)設定
 
 ```

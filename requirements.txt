@@ -9,7 +9,7 @@ google-cloud-storage
 pandas
 gunicorn
 google-cloud-logging
-tensorflow-cpu
 tensorflow-cpu 
 Pillow
 flask_ngrok
+Pillow
