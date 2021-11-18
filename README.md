@@ -48,5 +48,20 @@ gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/ai-touille:0.0.1
 
 
 
+### 在GCP設定環境變數
+
+使用Linux的export指令在Terminal輸入指令設定：
+```
+export LINE_CHANNEL_ACCESS_TOKEN="這邊去LINE後台複製token"
+
+export LINE_CHANNEL_SECRET="貼上要用的secrete"
+
+export USER_INFO_TEMP_BUCKET_NAME="temp_food_image_mvp"
+
+export FOOD_IMAGE_BUCKET_NAME="food-image-mvp"
+```
+
+
+
 ### 參考資料
 
