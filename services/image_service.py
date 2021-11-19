@@ -95,30 +95,37 @@ class ImageService:
 
         # run the inference
         prediction = model.predict(data)
-
+        # print(prediction)
         # 取得預測值
         max_probability_item_index = np.argmax(prediction[0])
-
+        # print(max_probability_item_index)
         # 將預測值拿去尋找line_message
         # 並依照該line_message，進行消息回覆，result_message_array是回傳給user的文字訊息(來自json檔)
+        # print(prediction.max())
         if prediction.max() > 0.6:
+            # TODO: 3. 用選單讓讓user選他拍的是什麼東西，存到update_tag
+
             result_message_array = detect_json_array_to_new_message_array(
                 "line_message_json/"+class_dict.get(max_probability_item_index)+".json")
+            result_tag = class_dict.get(max_probability_item_index)
+            # print(result_tag)
+            # TODO: 1. 用result_tag來去搜尋食譜資料庫
+            # TODO: 2. 把食譜網址回傳給user
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 result_message_array
             )
-            result_tag = class_dict.get(max_probability_item_index)
-            # print(result_tag)
         else:
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(f"""照片目前無法辨認，已上傳雲端資料庫，敬請期待未來的AI服務！""")
             )
+            # TODO: 寫一個機制讓user告訴我們她傳的照片是什麼
             result_tag = "無法辨認"
 
 
         # 存照片到訓練資料收集的Bucket裡面：food-image-mvp
+
         storage_client = storage.Client()
         bucket_name = os.environ['FOOD_IMAGE_BUCKET_NAME']
         # 目的地不分使用者，直接存在一起
