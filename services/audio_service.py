@@ -46,7 +46,7 @@ class AudioService:
 
         # 上傳至bucket
         storage_client = storage.Client()
-        bucket_name = os.environ['USER_INFO_GS_BUCKET_NAME']
+        bucket_name = os.environ['USER_INFO_TEMP_BUCKET_NAME']
         destination_blob_name = f'{event.source.user_id}/audio/{event.message.id}.mp3'
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)

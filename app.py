@@ -16,6 +16,10 @@ from flask import Flask, request, abort
 
 from flask_cors import CORS
 
+
+# 外部連結自動生成套件
+from flask_ngrok import run_with_ngrok
+
 from linebot.exceptions import (
     InvalidSignatureError
 )
@@ -32,13 +36,16 @@ from linebot import (
     LineBotApi, WebhookHandler
 )
 import os
-line_bot_api=LineBotApi(channel_access_token)
-handler=WebhookHandler(channel_secret)
+
+line_bot_api = LineBotApi(
+    channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
+handler = WebhookHandler(channel_secret=os.environ["LINE_CHANNEL_SECRET"])
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
 
 
 # 載入Follow事件
 from linebot.models.events import (
-    FollowEvent,UnfollowEvent,MessageEvent,TextMessage,PostbackEvent,ImageMessage,AudioMessage,VideoMessage
+    FollowEvent, UnfollowEvent, MessageEvent, TextMessage, PostbackEvent, ImageMessage, AudioMessage, VideoMessage
 )
 
 
@@ -52,21 +59,29 @@ from google.cloud.logging.handlers import CloudLoggingHandler
 client = google.cloud.logging.Client()
 
 # 建立line event log，用來記錄line event
-bot_event_handler = CloudLoggingHandler(client,name="AI-touille_bot_event")
-bot_event_logger=logging.getLogger('AI-touille_bot_event')
+bot_event_handler = CloudLoggingHandler(client, name="AI-touille_bot_event")
+bot_event_logger = logging.getLogger('AI-touille_bot_event')
+
 bot_event_logger.setLevel(logging.INFO)
 bot_event_logger.addHandler(bot_event_handler)
 
 app = Flask(__name__)
+# 底下兩行本地端跑ngrok時用
+app.debug = True
+run_with_ngrok(app)
+
 
 @app.route('/test')
 def hello_world():
     bot_event_logger.info("test")
     return 'Hello, World!'
 
+
 '''
 轉發功能列表
 '''
+
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -84,38 +99,50 @@ def callback():
 
     return 'OK'
 
+
 @handler.add(FollowEvent)
 def handle_line_follow(event):
     return LineBotController.follow_event(event)
+
 
 @handler.add(UnfollowEvent)
 def handle_line_unfollow(event):
     return LineBotController.unfollow_event(event)
 
-@handler.add(MessageEvent,TextMessage)
+
+@handler.add(MessageEvent, TextMessage)
 def handle_line_text(event):
     return LineBotController.handle_text_message(event)
 
-@handler.add(MessageEvent,ImageMessage)
+
+@handler.add(MessageEvent, ImageMessage)
 def handle_line_image(event):
     return LineBotController.handle_image_message(event)
 
-@handler.add(MessageEvent,VideoMessage)
+
+@handler.add(MessageEvent, VideoMessage)
 def handle_line_video(event):
     return LineBotController.handle_video_message(event)
 
-@handler.add(MessageEvent,AudioMessage)
+
+@handler.add(MessageEvent, AudioMessage)
 def handle_line_audio(event):
     return LineBotController.handle_audio_message(event)
+
 
 @handler.add(PostbackEvent)
 def handle_postback_event(event):
     return LineBotController.handle_postback_event(event)
 
-@app.route("/user",methods=['GET'])
+
+@app.route("/user", methods=['GET'])
 def get_user():
     result = UserController.get_user(request)
     return result
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    # 本地跑ngrok用
+    app.run()
+    # 上線版用
+    # app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
