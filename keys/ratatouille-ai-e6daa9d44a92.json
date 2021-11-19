@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "ratatouille-ai",
+  "private_key_id": "e6daa9d44a921be5676c2df824280622151b008c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCeLXAL+5FTZp0h\ncBUmWn5KBzr4KvSHazwE3zaFAqqHyo6VimpWPNNj4hCKGWh5MTp3dUCUDxfZnz5w\n1W+BNpHBsIzwUVmFLvjHtmfBgTcZiOaDGS/qMMEui3jVDfQkMLfPzDfklQ9mF1yP\nVS7B+3MxBAOwn6Z2bL6jRQ7qOvORerPMHuDvrH7YWFkhjGib+wh6DXY1t0Yo4DlO\nw8xcwlGUcRMkOWhq1Cved+7R8BR7nyW5XEb1GwSbeD4ILkEe/PaKbzYFGMrOPtYj\nEm6MLbj/O2JkII/5QMdjoYclLQV7lMT8eJBgevtEJY1nRi84l9CLlhSI994U3U5E\nP+d156qjAgMBAAECggEAHjyxXpkIftju0KWMZXiHC7+2FhqgBAMLxiKlWWfZEXw3\nJX8ANNwLzNw6LSwOPJycgJl5btQzyvYWCZvDZP/5fP0y8/2ZD0ybYhIMY4E/9zGk\nXwtBjZMkWrFut8ujEAgAG0j+pkOYXfu5Re0SsyJOMuCBlBHw0FKZXrykzUHXrcdp\n3TEdCgjWYwUUiGXQ+FvujThPBPym/pVwe5WlL6Q5HsCP3upPwUoDPeW/qaGTRPZA\nwi23JPjHaDCivGMuv1abAFvT6g+Cm05rmpqlKmD/yML5ReCWxCr7ghQQXMn89J16\nySTAMVC255Eh5JFbSSGa0eOuK6wFRUF4//Ii48XkgQKBgQDW80k2ZVIXy8PXuEoc\n3aWrbu5DeyOOkCkzZ/mq9MHDcHRJGQyWdwAMm5KAGR8alBQa/oE91F3CVanpGvx/\nLgTgZEq1W5a+6UUG22Bo7Q0UIbnz8P/DmJraUX3RVa+VVfNrDPfPV0qg59GHQ3Ic\nQFM7CsGZ63JTCKZCrM0s1ohhVQKBgQC8YpUMZZ1rDqJo8Q7GDycfY+lUIfsdX+Yf\nYexxujNhSbctckhPlxpSweUnyXchAS1rAdWdLiVNXn1aN/HGd4/n6DW+Vb1KxjjE\n9dSu4LfQJlvKd9SwKa9qBmDMre4JL+EeS7YuxC80Q/hJDDjG51SGELe000J/58k5\n/TpvoXs8FwKBgHtu5YHpGQU1K9c6qsR8u2AAqa3yjm6VdjNg58w2FPaoIv6+9a2J\n1GtpAu2wf14B3rHJqGnbA6RPEO0dZBWcVYyNyyDt4VjsF4lifLCEP9hpraDZqeWm\nQnZQCZImRFfbLZcxsTRNijtwI7ArGOIERkdHW/mJbPMlqmPrWz7+Sv6pAoGAO2MI\ngaP3ACzY3iQ/+AgG2Upx3+fmddgpf3MrSp7cW6sVZ+pDCXQlBDnDt8s3Ftx8KOOn\nJ6nIcJ98/NfuDBbc8sqtRpdY2R2r/8tPhOGqkJ/HCAjGr9I0TkQ8d8nM5HCHkzli\n8VM/XkafGsgTjgCXELxsbUC8Ef5L3VAK/+30H3kCgYBNlp5OlEqgu5XDoV1orkbY\n8ElZEtsbbHQaocEfozSRveJG7tvidqdxwXvZOSz3rvIlOJS0v1k0BRwEEMW2O7nb\n0xD0H7SIQ5/y2FHsjXDFtskyIzWfJcOHS+y7HL4oJ9wuuvqlsd8baUiBce083Jc5\njD2o2sBXNloCZaatMy6Jvg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "beta-run-local@ratatouille-ai.iam.gserviceaccount.com",
+  "client_id": "103239714265704982606",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/beta-run-local%40ratatouille-ai.iam.gserviceaccount.com"
+}
