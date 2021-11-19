@@ -113,7 +113,7 @@ class ImageService:
             # 用result_tag來去搜尋食譜資料庫
             push_recipe = use_result_tag_to_query(result_tag)
             # 搜尋資料庫得到食譜連結，並把它轉成可以回傳給user的文字訊息格式存成push_recipe
-            # print(push_recipe)
+            print(push_recipe)
 
             # 把拿到的食譜資訊append到result_message_array
             result_message_array.append(push_recipe)
