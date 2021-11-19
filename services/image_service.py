@@ -27,7 +27,8 @@ import time
 
 import os
 
-from utils.reply_send_message import detect_json_array_to_new_message_array
+from utils.reply_send_message import detect_json_array_to_new_message_array, turn_recipe_list_to_array
+from utils.search_recipe import use_result_tag_to_query
 
 model = tensorflow.keras.models.load_model(
     'converted_savedmodel/model.savedmodel')
@@ -108,13 +109,21 @@ class ImageService:
             result_message_array = detect_json_array_to_new_message_array(
                 "line_message_json/"+class_dict.get(max_probability_item_index)+".json")
             result_tag = class_dict.get(max_probability_item_index)
-            # print(result_tag)
-            # TODO: 1. 用result_tag來去搜尋食譜資料庫
-            # TODO: 2. 把食譜網址回傳給user
+            print(result_tag)
+            # 用result_tag來去搜尋食譜資料庫
+            push_recipe = use_result_tag_to_query(result_tag)
+            # 搜尋資料庫得到食譜連結，並把它轉成可以回傳給user的文字訊息格式存成push_recipe
+            # print(push_recipe)
+
+            # 把拿到的食譜資訊append到result_message_array
+            result_message_array.append(push_recipe)
+            # print(result_message_array)
+            # 把食譜網址回傳給user
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 result_message_array
             )
+
         else:
             cls.line_bot_api.reply_message(
                 event.reply_token,
