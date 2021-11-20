@@ -11,8 +11,23 @@ macOS或是GCP上要是無法操作請用
 pip3 install -r requirements.txt
 ```
 
+#### 關於 requirements.txt 文件與安裝套件的注意事項
+##### tensorflow-cpu
+GCP上運行的套件tensorflow-cpu有指定版本：
+```
+tensorflow-cpu == 2.4.1
+```
+本機端或是GCP跑ngrok時如果安裝完套件有跳錯誤碼請手動安裝更新，或是將上面那行的版本號移除。
+
+##### flask_ngrok
+如果有出現這個套件的錯誤碼，可以輸入以下指令解決，詳情可以看最底下參考資料中的連結。
+```
+pip install git+https://github.com/gstaff/flask-ngrok
+```
+
 ### 環境變數(Environment Variables)設定
 
+GCP Cloud Run 設定 container 資訊時，請點到環境變數的分頁(VARIABLES & SECRETS)設定以下幾個變數：
 ```
 LINE_CHANNEL_ACCESS_TOKEN
 
@@ -21,6 +36,8 @@ LINE_CHANNEL_SECRET
 USER_INFO_TEMP_BUCKET_NAME：存到 temp_food_image_mvp 這個 bucket
 
 FOOD_IMAGE_BUCKET_NAME：存到 food-image-mvp 這個 bucket
+
+GOOGLE_APPLICATION_CREDENTIALS: 設定存鑰匙的位置為 keys/ratatouille-ai-e6daa9d44a92.json
 ```
 
 
@@ -48,7 +65,7 @@ gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/ai-touille:0.0.1
 
 
 
-### 在GCP設定環境變數
+### 在GCP設定環境變數 (跑ngrok時需要用的)
 
 使用Linux的export指令在Terminal輸入指令設定：
 ```
@@ -61,7 +78,11 @@ export USER_INFO_TEMP_BUCKET_NAME="temp_food_image_mvp"
 export FOOD_IMAGE_BUCKET_NAME="food-image-mvp"
 ```
 
+### 連線鑰匙
+上傳專案程式碼資料時請勿將 keys 資料夾上傳，專案的.gitignore檔案中有設定不同步keys資料夾，記得如果拉到GCP上面使用時要手動將keys資料夾加進去，我在團隊Google Drive中有放一份，如果需要也可以到GCP中在生一支鑰匙來使用。
 
 
 ### 參考資料
+[flask-ngrok GitHub issue: Virtualenv support #2 討論串](https://github.com/gstaff/flask-ngrok/issues/2)
+
 
