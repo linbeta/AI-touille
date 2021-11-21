@@ -3,8 +3,8 @@
 ## ========== 設定line_bot  ==========
 import os
 
-CHANNEL_ACCESS_TOKEN = os.environ["token"]
-CHANNEL_SECRET = os.environ["secret"]
+CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
+CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 
 ## ========== 新增 Rich menus，並透過line API 取得 rich_menu_link ==========
 ## (! 配合圖片格式修改參數)

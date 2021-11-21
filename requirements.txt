@@ -9,7 +9,7 @@ google-cloud-storage
 pandas
 gunicorn
 google-cloud-logging
-tensorflow-cpu == 2.4.1
+tensorflow-cpu
 Pillow
 flask_ngrok
 Pillow

@@ -27,7 +27,7 @@ import time
 
 import os
 
-from utils.reply_send_message import detect_json_array_to_new_message_array, turn_recipe_list_to_array
+from utils.reply_send_message import detect_json_array_to_new_message_array
 from utils.search_recipe import use_result_tag_to_query
 
 model = tensorflow.keras.models.load_model(
