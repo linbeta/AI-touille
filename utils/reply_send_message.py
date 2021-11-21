@@ -48,3 +48,10 @@ def detect_json_array_to_new_message_array(fileName):
 
     # 回傳
     return returnArray
+
+
+def turn_recipe_list_to_array(recipe_list):
+    returnArray = []
+    for recipe in recipe_list:
+        returnArray.append({"text": recipe, "type": "text"})
+    return returnArray

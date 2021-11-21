@@ -9,7 +9,11 @@ google-cloud-storage
 pandas
 gunicorn
 google-cloud-logging
-tensorflow-cpu 
+tensorflow-cpu == 2.4.1
 Pillow
 flask_ngrok
 Pillow
+google-cloud-bigquery
+google-cloud-bigquery-storage
+BigQuery-Python
+pyarrow
