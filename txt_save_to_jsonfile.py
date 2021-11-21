@@ -21,5 +21,5 @@ with open('converted_savedmodel/labels.txt', encoding="utf-8") as f:
         (key, val) = line.split()
 
         #自動創建json檔案並寫入內容, 先將測試的資料寫入自行創建的test_save_json資料夾裡~~
-        with open('test_save_json/'+ val + '.json', 'w', encoding="utf-8") as f:
-            f.write('[{"type": "text", "text": ' + f'"{val}"' + '}]')
+        with open('line_message_json/'+ val + '.json', 'w', encoding="utf-8") as j:
+            j.write('[{"type": "text", "text": ' + f'"{val}"' + '}]')
