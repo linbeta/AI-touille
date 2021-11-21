@@ -44,7 +44,6 @@ def detect_json_array_to_new_message_array(fileName):
             returnArray.append(FlexSendMessage.new_from_json_dict(jsonObject))  
         elif message_type == 'video':
             returnArray.append(VideoSendMessage.new_from_json_dict(jsonObject))    
-
-
     # 回傳
     return returnArray
+
