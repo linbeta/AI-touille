@@ -12,7 +12,8 @@ COPY . ./
 
 # Install production dependencies.
 RUN pip install -r requirements.txt &&\
-    pip install gunicorn
+    pip install gunicorn &&\
+    python3 txt_save_to_jsonfile.py
 
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
