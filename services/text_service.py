@@ -30,34 +30,17 @@ class TextService:
         '''
         載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
         '''
-        try:
-            # TODO：串接資料庫
-            user_message = event.message.text
-            reply = use_result_tag_to_query(user_message)
-            cls.line_bot_api.reply_message(
-                event.reply_token,
-                reply
-            )
-        except:
-            pass
+        # TODO：串接資料庫
+        user_message = event.message.text
+        reply = use_result_tag_to_query(user_message)
+        cls.line_bot_api.reply_message(
+            event.reply_token,
+            reply
+        )
 
 # =====================================  以下先保留(參考用)  =============================================
 
-        # if user_message in Ingredients:
-        #     cls.line_bot_api.reply_message(
-        #         event.reply_token,
-        #         # TextSendMessage(services.image_service.result_tag)
-        #         TextSendMessage(text=use_result_tag_to_query.reply_message)
-        #     )
-        #     print(event.message.text)
-        # else:
-        #     cls.line_bot_api.reply_message(
-        #         event.reply_token,
-        #         TextSendMessage(text="訊息無法辨識，請輸入食材名稱或上傳食材圖片")
-        #     )
-
-
-import services.image_service
+# import services.image_service
 #
 # class TextService:
 #     line_bot_api = LineBotApi(
@@ -68,39 +51,6 @@ import services.image_service
 #
 #         # TODO：串接資料庫
 #         Ingredients = ("雞排,珍奶")  #必須tuple 不能list
-#         user_message = event.message.text
-#         tag_link = ("https://icook.tw/recipes/397498")
-#
-#         if user_message in Ingredients:
-#             cls.line_bot_api.reply_message(
-#                 event.reply_token,
-#                 # TextSendMessage(services.image_service.result_tag)
-#                 TextSendMessage(text=tag_link)
-#             )
-#             print(event.message.text)
-#         else:
-#             cls.line_bot_api.reply_message(
-#                 event.reply_token,
-#                 TextSendMessage(text="訊息無法辨識，請輸入食材名稱或上傳食材圖片")
-#             )
-
-
-#
-#
-# class TextService:
-#     line_bot_api = LineBotApi(
-#         channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
-#
-#     @classmethod
-#     def line_user_send_text_message(cls, event):
-#         '''
-#         載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
-#         '''
-#         Ingredients = ()
-#         with open('converted_savedmodel/labels.txt', encoding="utf-8") as f:
-#             for line in f:
-#                   line.split()[1] = Ingredients
-#         # TODO：串接資料庫
 #         user_message = event.message.text
 #         tag_link = ("https://icook.tw/recipes/397498")
 #
