@@ -39,7 +39,6 @@ class TextService:
         )
 
 # =====================================  以下先保留(參考用)  =============================================
-
 # import services.image_service
 #
 # class TextService:
