@@ -8,20 +8,23 @@ pip install --upgrade google-cloud-speech
 '''
 
 '''
-圖文選單那邊要串LINE語音功能api
+待確認: LINE圖文選單那邊要串語音功能??
 '''
 
 from google.cloud import speech
-
 speech_client = speech.SpeechClient()
-
-
 def get_audio_transfor(bucket_name, destination_blob_name):
     gcs_uri = 'gs://' + bucket_name + '/' + destination_blob_name
     print(gcs_uri)
     audio = speech.RecognitionAudio(uri=gcs_uri)
 
-    #config官方文件上的範例, 但噴錯
+    # 11.23_測試看看本地端的code是否可翻譯
+    # import io
+    # with io.open('15127146142146.mp3', "rb") as audio_file:
+    #     content = audio_file.read()
+    # audio = speech.RecognitionAudio(content=content)
+
+    #11.22_config官方文件上的範例, 但噴錯
     # config = speech.RecognitionConfig(
     #     encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
     #     sample_rate_hertz=16000,
