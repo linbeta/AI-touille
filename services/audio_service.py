@@ -22,8 +22,8 @@ from linebot.models import (
 # 圖片下載與上傳專用
 import urllib.request
 from google.cloud import storage
-
-
+#todo 2021.11.22_簡易測試取音檔
+from test_speech_to_text import get_audio_transfor
 class AudioService:
     line_bot_api = LineBotApi(channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 
@@ -51,7 +51,8 @@ class AudioService:
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(temp_file_path)
-
+        # todo test~~ 2021.11.22_簡易測試取音檔
+        get_audio_transfor(bucket_name, destination_blob_name)
         # 移除本地檔案
         os.remove(temp_file_path)
 
