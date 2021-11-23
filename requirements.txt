@@ -15,4 +15,5 @@ flask_ngrok
 Pillow
 bigquery==0.0.20
 BigQuery-Python==1.15.0
+pyarrow
 
