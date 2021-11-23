@@ -44,14 +44,6 @@ def detect_json_array_to_new_message_array(fileName):
             returnArray.append(FlexSendMessage.new_from_json_dict(jsonObject))  
         elif message_type == 'video':
             returnArray.append(VideoSendMessage.new_from_json_dict(jsonObject))    
-
-
     # 回傳
     return returnArray
 
-
-def turn_recipe_list_to_array(recipe_list):
-    returnArray = []
-    for recipe in recipe_list:
-        returnArray.append({"text": recipe, "type": "text"})
-    return returnArray
