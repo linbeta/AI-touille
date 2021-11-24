@@ -1,9 +1,7 @@
 '''
 
-用戶上傳照片時，將照片從Line取回，放入CloudStorage
-
-瀏覽用戶目前擁有多少張照片（未）
-
+用戶傳送聲音檔時，將audio從Line取回，放入CloudStorage
+送到speech-to-text API去做處理，轉成文字
 '''
 
 from models.user import User
@@ -22,8 +20,8 @@ from linebot.models import (
 # 圖片下載與上傳專用
 import urllib.request
 from google.cloud import storage
-#todo 2021.11.22_簡易測試取音檔
-from test_speech_to_text import get_audio_transfor
+# #todo 2021.11.22_簡易測試取音檔
+# from test_speech_to_text import get_audio_transfor
 class AudioService:
     line_bot_api = LineBotApi(channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 
@@ -52,7 +50,7 @@ class AudioService:
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(temp_file_path)
         # todo test~~ 2021.11.22_簡易測試取音檔
-        get_audio_transfor(bucket_name, destination_blob_name)
+        # get_audio_transfor(bucket_name, destination_blob_name)
         # 移除本地檔案
         os.remove(temp_file_path)
 
