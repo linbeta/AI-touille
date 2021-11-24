@@ -129,7 +129,7 @@ class ImageService:
                 event.reply_token,
                 result_message_array
             )
-        # TODO: 3. 用選單讓讓user選他拍的是什麼東西，存到update_tag
+        # TODO: 用選單讓讓user選他拍的是什麼東西，存到update_tag
         elif prediction.max() > 0.3:
             # 取得預測前3大的labels
             top_3_labels = prediction[0].argsort()[-3:][::-1]
@@ -186,7 +186,4 @@ class ImageService:
         os.remove(temp_file_path)
 
         # 回覆消息
-        # cls.line_bot_api.reply_message(
-        #     event.reply_token,
-        #     TextSendMessage(f"""圖片已上傳，請期待未來的AI服務！""")
-        # )
+
