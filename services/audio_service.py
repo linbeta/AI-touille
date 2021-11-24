@@ -1,9 +1,6 @@
 '''
-
-用戶上傳照片時，將照片從Line取回，放入CloudStorage
-
-瀏覽用戶目前擁有多少張照片（未）
-
+用戶上傳音訊檔時，將音訊檔從Line取回，轉成文字訊息，
+並將音訊檔放入CloudStorage
 '''
 
 from models.user import User
@@ -15,12 +12,16 @@ from linebot import (
 import os
 from daos.user_dao import UserDAO
 from linebot.models import (
-    TextSendMessage
+    TextSendMessage, TextMessage
 )
 
-# 圖片下載與上傳專用
+# 拿user資料
+from services.user_service import UserService
+
+# 檔案下載與上傳專用
 import urllib.request
 from google.cloud import storage
+# 聲音轉文字的套件GCP提供的API
 from google.cloud import speech_v1p1beta1 as speech
 
 speech_client = speech.SpeechClient()
@@ -30,27 +31,30 @@ class AudioService:
     line_bot_api = LineBotApi(channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 
     '''
-    用戶上傳照片
-    將照片取回
-    將照片存入CloudStorage內
+    用戶上傳音訊檔
+    將音訊檔取回
+    將檔案存入CloudStorage內
     '''
 
     @classmethod
     def line_user_upload_video(cls, event):
 
-        # 取出照片
+        # 取出音檔
         image_blob = cls.line_bot_api.get_message_content(event.message.id)
         temp_file_path = f"""{event.message.id}.mp3"""
 
-        #
+
         with open(temp_file_path, 'wb') as fd:
             for chunk in image_blob.iter_content():
                 fd.write(chunk)
 
+        user_object = UserService.get_user(event.source.user_id)
+        user_nickname = user_object.line_user_nickname
+
         # 上傳至bucket
         storage_client = storage.Client()
         bucket_name = os.environ['USER_INFO_TEMP_BUCKET_NAME']
-        destination_blob_name = f'{event.source.user_id}/audio/{event.message.id}.mp3'
+        destination_blob_name = f'{user_nickname}/audio/{event.message.id}.mp3'
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(temp_file_path)
