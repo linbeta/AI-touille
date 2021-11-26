@@ -47,8 +47,7 @@ class UserDAO:
         if user_doc.exists:
             user = User.from_dict(user_doc.to_dict())
             # print(f'Document data: {user_doc.to_dict()}')
+            return user
         else:
             pass
             # print(u'No such document!')
-
-        return user
