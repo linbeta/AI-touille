@@ -11,9 +11,8 @@ from linebot import (
 import os
 from daos.user_dao import UserDAO
 from linebot.models import (
-    TextSendMessage
+    TextSendMessage, QuickReply, QuickReplyButton, MessageAction,
 )
-
 
 # 圖片下載與上傳專用
 import urllib.request
@@ -147,11 +146,30 @@ class ImageService:
 
             result_message += "呢?"
 
-            # 回傳給user預測前三強的可能
+            # 製作3個Quick Reply buttons讓使用者選擇 + 1個以上皆非Quick Reply buttons選項
+            btn_1 = QuickReplyButton(
+                     action=MessageAction(label=class_dict[top_3_labels[0]], text=class_dict[top_3_labels[0]])
+                 )
+            btn_2 = QuickReplyButton(
+                     action=MessageAction(label=class_dict[top_3_labels[1]], text=class_dict[top_3_labels[1]])
+                 )
+            btn_3 = QuickReplyButton(
+                     action=MessageAction(label=class_dict[top_3_labels[2]], text=class_dict[top_3_labels[2]])
+                 )
+            btn_4 = QuickReplyButton(
+                     action=MessageAction(label="以上皆非", text="照片目前無法辨認，已上傳雲端資料庫，敬請期待未來的AI服務！")
+                 )
+            # textQuickReplyButton = QuickReplyButton(
+            #          action=MessageAction(label="按鈕", text="檸檬")
+            #      )
+            quickReplyList = QuickReply(items=[btn_1, btn_2, btn_3, btn_4])
+
+            # 回傳給user預測前三強的可能，讓user用按鈕回覆
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(result_message)
+                TextSendMessage(text=result_message, quick_reply=quickReplyList)
             )
+
         else:
             cls.line_bot_api.reply_message(
                 event.reply_token,
