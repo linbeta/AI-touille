@@ -54,7 +54,7 @@ def multiple_ingredient_query(ingredient_list, ing_num):
     # 取前4個食譜做成list
     reply_recipe_list = []
     for row in rows:
-        print(row)
+        # print(row)
         dish = row[0] + " " + row[1]
         if dish not in reply_recipe_list:
             reply_recipe_list.append(dish)
@@ -62,7 +62,7 @@ def multiple_ingredient_query(ingredient_list, ing_num):
     reply_message = []
     for dish in reply_recipe_list[:4]:
         reply_message.append(TextSendMessage(dish))
-    print(reply_message)
+    # print(reply_message)
     return reply_message
 
 

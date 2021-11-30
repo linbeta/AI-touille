@@ -47,9 +47,9 @@ class TextService:
                 )
             else:
                 # TODO: 串接資料庫->複數食材搜尋
-                print(ingredients)
+                # print(ingredients)
                 dishes = multiple_ingredient_query(ingredients, len(ingredients))
-                print(dishes)
+                # print(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
                     dishes
