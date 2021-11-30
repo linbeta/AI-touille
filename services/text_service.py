@@ -15,11 +15,9 @@ from daos.user_dao import UserDAO
 from linebot.models import (
     TextSendMessage
 )
-
-from linebot.models.events import (
-    FollowEvent
-)
+# 搜尋食譜
 from utils.search_recipe import use_result_tag_to_query
+from utils.text_parsing import get_ingredients
 
 class TextService:
     line_bot_api = LineBotApi(
@@ -32,7 +30,13 @@ class TextService:
         '''
         # TODO：串接資料庫
         user_message = event.message.text
-        reply = use_result_tag_to_query(user_message)
+        # 引用utils/text_parsing.py裡面的方法來把食材切出來
+        ingredients = get_ingredients(user_message)
+        reply = []
+        for item in ingredients:
+            dish = use_result_tag_to_query(item)
+            reply.append(dish)
+
         cls.line_bot_api.reply_message(
             event.reply_token,
             reply
