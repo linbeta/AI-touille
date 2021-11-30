@@ -18,8 +18,8 @@ from linebot.models import (
 # 拿user資料
 from services.user_service import UserService
 # 搜尋食譜
-from utils.search_recipe import use_result_tag_to_query
-from utils.text_parsing import get_ingredients
+from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_query
+from utils.text_parsing import get_ingredients, get_intent
 
 # 檔案下載與上傳專用
 import urllib.request
@@ -96,19 +96,29 @@ class AudioService:
 
         # test_voice_input = "我有雞肉白蘿蔔香菇玉米洋蔥，可以煮什麼？"
         # utils.text_parsing裡面的方法，將一句話裡面有的食材切出來回傳一個list
+
+        # 引用utils/text_parsing.py裡面的方法來把食材切出來
         ingredients_from_audio = get_ingredients(reply_transcript)
 
         reply_msg = [TextSendMessage(f"語音輸入： {reply_transcript}")]
 
-        for item in ingredients_from_audio:
-            dish = use_result_tag_to_query(item)
-            reply_msg.append(dish)
+        if len(ingredients_from_audio) == 0:
+            # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+            reply_message = get_intent(reply_transcript)
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(reply_message)
+            )
+        else:
+            # TODO: 串接資料庫->複數食材搜尋
+            dishes = multiple_ingredient_query(ingredients_from_audio, len(ingredients_from_audio))
+            reply_msg += dishes
+            # 回覆訊息給使用者
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                reply_msg
+            )
 
-        # 回覆訊息給使用者
-        cls.line_bot_api.reply_message(
-            event.reply_token,
-            reply_msg
-        )
 
         # option:2 ----- 將reply_transcript截取出食材，進資料庫做複數食材搜尋 ------ #
 

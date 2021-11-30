@@ -157,7 +157,7 @@ class ImageService:
                      action=MessageAction(label=class_dict[top_3_labels[2]], text=class_dict[top_3_labels[2]])
                  )
             btn_4 = QuickReplyButton(
-                     action=MessageAction(label="以上皆非", text="照片目前無法辨認，已上傳雲端資料庫，敬請期待未來的AI服務！")
+                     action=MessageAction(label="以上皆非", text="都不是喔！")
                  )
             # textQuickReplyButton = QuickReplyButton(
             #          action=MessageAction(label="按鈕", text="檸檬")

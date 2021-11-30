@@ -34,9 +34,11 @@ def use_result_tag_to_query(ingredient_main):
         return reply_message
 
 
-def multiple_ingredient_query(ingredient_list_str, ing_num):
+def multiple_ingredient_query(ingredient_list, ing_num):
+    # 先把ingredient_list轉成可用的string一整串
+    ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
     QUERY = (
-        f"SELECT distinct b.id, b.recipe_name, b.URL, c.name, {ing_num} as user_material_cnt, (select count(x.id) "
+        f"SELECT distinct b.recipe_name, b.URL, c.name, {ing_num} as user_material_cnt, (select count(x.id) "
         f"FROM `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y, "
         f"`ratatouille-ai.recipebot.recipe` z WHERE x.material_id = y.id and x.recipe_id = z.id and trim(y.name) "
         f"in ({ingredient_list_str}) and z.recipe_name = b.recipe_name) as match_cnt, "
@@ -44,13 +46,30 @@ def multiple_ingredient_query(ingredient_list_str, ing_num):
         f"as recipe_material_cnt "
         f"FROM `ratatouille-ai.recipebot.recipe_material` as a, `ratatouille-ai.recipebot.recipe` as b, "
         f"`ratatouille-ai.recipebot.material` as c WHERE a.recipe_id = b.id and a.material_id = c.id and "
-        f"trim(c.name) in ({ingredient_list_str}) order by match_cnt desc, recipe_material_cnt asc, b.recipe_name;"
+        f"trim(c.name) in ({ingredient_list_str}) order by match_cnt desc, recipe_material_cnt asc, b.recipe_name "
+        f"LIMIT 10;"
     )
     query_job = client.query(QUERY)
     rows = query_job.result()
-    print("done")
+    # 取前4個食譜做成list
+    reply_recipe_list = []
     for row in rows:
-        print(row[1], row[2])
+        print(row)
+        dish = row[0] + " " + row[1]
+        if dish not in reply_recipe_list:
+            reply_recipe_list.append(dish)
+            # print(dish)
+    reply_message = []
+    for dish in reply_recipe_list[:4]:
+        reply_message.append(TextSendMessage(dish))
+    print(reply_message)
+    return reply_message
+
+
+def multiple_ingredient_search():
+    # TODO: 新資料庫新的query方法
+    pass
+
 
 
 # 測試用的code
@@ -60,11 +79,7 @@ def multiple_ingredient_query(ingredient_list_str, ing_num):
 
 # 測試用的code
 
-# ingredient_list = ['豬肉', '馬鈴薯']
-# # 把list轉成可用的string一整串
-# ing_list_str = ", ".join(repr(e) for e in ingredient_list)
-# print(ing_list_str)
+# ingredient_list = ['洋蔥', '豆腐', '雞胸肉']
 # # test = str(ingredient_list)
-# test = multiple_ingredient_query(ing_list_str, len(ingredient_list))
-
+# test = multiple_ingredient_query(ingredient_list, len(ingredient_list))
 
