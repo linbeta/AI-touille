@@ -15,11 +15,9 @@ from daos.user_dao import UserDAO
 from linebot.models import (
     TextSendMessage
 )
-
-from linebot.models.events import (
-    FollowEvent
-)
-from utils.search_recipe import use_result_tag_to_query
+# 搜尋食譜
+from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_query
+from utils.text_parsing import get_ingredients, get_intent
 
 class TextService:
     line_bot_api = LineBotApi(
@@ -31,12 +29,31 @@ class TextService:
         載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
         '''
         # TODO：串接資料庫
-        user_message = event.message.text
-        reply = use_result_tag_to_query(user_message)
-        cls.line_bot_api.reply_message(
-            event.reply_token,
-            reply
-        )
+        if event.message.text == "都不是喔！":
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage("那請問這是什麼？XD")
+            )
+        else:
+            user_message = event.message.text
+            # 引用utils/text_parsing.py裡面的方法來把食材切出來
+            ingredients = get_ingredients(user_message)
+            if len(ingredients) == 0:
+                # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+                reply_message = get_intent(user_message)
+                cls.line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(reply_message)
+                )
+            else:
+                # TODO: 串接資料庫->複數食材搜尋
+                # print(ingredients)
+                dishes = multiple_ingredient_query(ingredients, len(ingredients))
+                # print(dishes)
+                cls.line_bot_api.reply_message(
+                    event.reply_token,
+                    dishes
+                )
 
 # =====================================  以下先保留(參考用)  =============================================
 

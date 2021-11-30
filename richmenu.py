@@ -56,7 +56,7 @@ from linebot import (LineBotApi, WebhookHandler)
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 
 ## (! 配合圖片修改檔名"richmenu.jpg"及圖片形式"image/jpeg")
-with open("richmenu.jpg",'rb') as f:
+with open("pic/richmenu.jpg",'rb') as f:
     line_bot_api.set_rich_menu_image(richmenuId, "image/jpeg", f)
 
 
