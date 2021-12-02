@@ -54,11 +54,11 @@ def multiple_ingredient_query(ingredient_list, ing_num):
     # 取前4個食譜做成list
     reply_recipe_list = []
     for row in rows:
-        # print(row)
+        print(row)
         dish = row[0] + " " + row[1]
         if dish not in reply_recipe_list:
             reply_recipe_list.append(dish)
-            # print(dish)
+            print(dish)
     reply_message = []
     for dish in reply_recipe_list[:4]:
         reply_message.append(TextSendMessage(dish))
@@ -66,10 +66,38 @@ def multiple_ingredient_query(ingredient_list, ing_num):
     return reply_message
 
 
-def multiple_ingredient_search():
+def multiple_ingredient_search(ingredient_list):
     # TODO: 新資料庫新的query方法
-    pass
+    ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
+    print(ingredient_list_str)
+    QUERY = (
+        f"SELECT distinct b.recipe_name, b.URL, 4 as user_material_cnt, (select count(x.id) "
+        f"from `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y, "
+        f"`ratatouille-ai.recipebot.recipe` z"
+        f"where x.material_id=y.id and x.recipe_id=z.id  and trim(y.name) in ({ingredient_list_str}) "
+        f"and z.id=b.id  ) as match_cnt, "
+        f"(select count(material_id) from `ratatouille-ai.recipebot.recipe_material` "
+        f"where recipe_id = b.id) as recipe_material_cnt  "
+        f"FROM `ratatouille-ai.recipebot.recipe_material` as a,`ratatouille-ai.recipebot.recipe` as b, "
+        f"ratatouille-ai.recipebot.material as c "
+        f"where a.recipe_id=b.id and a.material_id=c.id and trim(c.name) in ({ingredient_list_str}) "
+        f"order by match_cnt desc, recipe_material_cnt asc,b.recipe_name;")
 
+    query_job = client.query(QUERY)
+    rows = query_job.result()
+    # 取前4個食譜做成list
+    reply_recipe_list = []
+    for row in rows:
+        print(row)
+        # dish = row[0] + " " + row[1]
+        # if dish not in reply_recipe_list:
+        #     reply_recipe_list.append(dish)
+            # print(dish)
+    # reply_message = []
+    # for dish in reply_recipe_list[:4]:
+    #     reply_message.append(TextSendMessage(dish))
+    # # print(reply_message)
+    # return reply_message
 
 
 # 測試用的code
@@ -79,7 +107,8 @@ def multiple_ingredient_search():
 
 # 測試用的code
 
-# ingredient_list = ['洋蔥', '豆腐', '雞胸肉']
-# # test = str(ingredient_list)
-# test = multiple_ingredient_query(ingredient_list, len(ingredient_list))
+ingredient_list = ['雞肉', '豬肉','馬鈴薯','牛肉']
+test = multiple_ingredient_query(ingredient_list, len(ingredient_list))
 
+# ingredient_list = ['洋蔥', '豆腐', '雞胸肉']
+# multiple_ingredient_search(ingredient_list)
