@@ -21,3 +21,5 @@ google-cloud-speech
 numpy
 requests
 jieba
+os
+json
