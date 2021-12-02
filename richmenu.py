@@ -20,23 +20,19 @@ body = {
     "chatBarText": " ▲ ▼ 選單",
     "areas":[
         {
-          "bounds": {"x": 0, "y": 0, "width": 500, "height": 599},
+          "bounds": {"x": 0, "y": 0, "width": 625, "height": 635},
           "action": {"type": "uri", "uri": "https://line.me/R/nv/camera/"}
         },
         {
-          "bounds": {"x": 500, "y": 0, "width": 500, "height": 599},
-          "action": {"type": "uri", "uri": "https://line.me/R/nv/cameraRoll/multi"}
+          "bounds": {"x": 625, "y": 0, "width": 625, "height": 635},
+          "action": {"type": "uri", "uri": "https://line.me/R/nv/cameraRoll/multi"},
         },
         {
-          "bounds": {"x": 1000, "y": 0, "width": 500, "height": 599},
-          "action": {"type": "uri", "uri": "https://docs.google.com/spreadsheets/d/1xlbx5NS3CkHv5dK9CyHWHmiRuEJgKwlRymHE_dtu5y4/edit?usp=sharing"}
-        },
-        {
-          "bounds": {"x": 1500, "y": 0, "width": 500, "height": 599},
+          "bounds": {"x": 1250, "y": 0, "width": 625, "height": 635},
           "action": {"type": "uri", "uri": "https://line.me/R/nv/recommendOA/@096oeofl"}
         },
         {
-          "bounds": {"x": 2000, "y": 0, "width": 500, "height": 599},
+          "bounds": {"x": 1875, "y": 0, "width": 625, "height": 635},
           "action": {"type": "uri", "uri": "https://evelynlee.github.io/AItouille/"}
         }
     ]
