@@ -16,8 +16,8 @@ from linebot.models import (
     TextSendMessage
 )
 # 搜尋食譜
-from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_query
 
+from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_search
 
 class TextService:
     line_bot_api = LineBotApi(
@@ -47,7 +47,7 @@ class TextService:
             else:
                 # TODO: 串接資料庫->複數食材搜尋
                 # print(ingredients)
-                dishes = multiple_ingredient_query(ingredients, len(ingredients))
+                dishes = multiple_ingredient_search(ingredients, len(ingredients))
                 # print(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
@@ -123,33 +123,3 @@ class TextService:
 
 
 
-
-
-# =====================================  以下先保留(參考用)  =============================================
-
-# import services.image_service
-#
-# class TextService:
-#     line_bot_api = LineBotApi(
-#         channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
-#
-#     @classmethod
-#     def line_user_send_text_message(cls, event):
-#
-#         # TODO：串接資料庫
-#         Ingredients = ("雞排,珍奶")  #必須tuple 不能list
-#         user_message = event.message.text
-#         tag_link = ("https://icook.tw/recipes/397498")
-#
-#         if user_message in Ingredients:
-#             cls.line_bot_api.reply_message(
-#                 event.reply_token,
-#                 # TextSendMessage(services.image_service.result_tag)
-#                 TextSendMessage(text=tag_link)
-#             )
-#             print(event.message.text)
-#         else:
-#             cls.line_bot_api.reply_message(
-#                 event.reply_token,
-#                 TextSendMessage(text="訊息無法辨識，請輸入食材名稱或上傳食材圖片")
-#             )

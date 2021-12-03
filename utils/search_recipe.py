@@ -58,7 +58,7 @@ def multiple_ingredient_query(ingredient_list, ing_num):
         dish = row[0] + " " + row[1]
         if dish not in reply_recipe_list:
             reply_recipe_list.append(dish)
-            # print(dish)
+            print(dish)
     reply_message = []
     for dish in reply_recipe_list[:4]:
         reply_message.append(TextSendMessage(dish))
@@ -66,9 +66,72 @@ def multiple_ingredient_query(ingredient_list, ing_num):
     return reply_message
 
 
-def multiple_ingredient_search():
+def multiple_ingredient_search(ingredient_list, ing_num):
     # TODO: 新資料庫新的query方法
-    pass
+    ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
+    # print(ingredient_list_str, ing_num)
+    QUERY = (
+        f"SELECT distinct b.id, b.recipe_name, b.URL, {ing_num} as user_material_cnt, "
+        f"(select count(x.id) from `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y,"
+        f"`ratatouille-ai.recipebot.recipe` z "
+        f"where x.material_id=y.id and x.recipe_id=z.id  and trim(y.name) in ({ingredient_list_str}) "
+        f"and z.id=b.id) as match_cnt, "
+        f"(select count(material_id) from `ratatouille-ai.recipebot.recipe_material` "
+        f"where recipe_id = b.id) as recipe_material_cnt "
+        f"FROM `ratatouille-ai.recipebot.recipe_material` as a,`ratatouille-ai.recipebot.recipe` as b, "
+        f"ratatouille-ai.recipebot.material as c "
+        f"WHERE a.recipe_id = b.id and a.material_id = c.id and trim(c.name) in ({ingredient_list_str}) "
+        f"order by match_cnt desc, recipe_material_cnt asc,b.recipe_name LIMIT 20;"
+    )
+
+    query_job = client.query(QUERY)
+    rows = query_job.result()
+    reply_message = []
+    # 取前4個食譜做成list
+    top_match_recipe_list = []
+    match_cnt_2_recipe_list = []
+    single_ing_recipe_list = []
+    for row in rows:
+        # print(row)
+        dish = row[1] + " " + row[2]
+        # 測試用的dish
+        # dish = row[1] + " " + row[2] + f" match_cnt: {row[4]}"
+        if row[4] == row[3]:
+            top_match_recipe_list.append(dish)
+        elif row[4] == row[3] - 1:
+            top_match_recipe_list.append(dish)
+        elif row[4] == 2:
+            match_cnt_2_recipe_list.append(dish)
+        elif row[4] == 1:
+            # reply_message.append(TextSendMessage("單一食材搜尋食譜如下："))
+            single_ing_recipe_list.append(dish)
+
+    if len(top_match_recipe_list) > 3:
+        shuffle(top_match_recipe_list)
+        # 如果超過4個，只取洗牌後的前4個出來
+        if len(top_match_recipe_list) > 4:
+            top_match_recipe_list = top_match_recipe_list[:4]
+        for dish in top_match_recipe_list:
+            reply_message.append(TextSendMessage(dish))
+    elif len(top_match_recipe_list) < 4 and len(match_cnt_2_recipe_list) > 0:
+        shuffle(match_cnt_2_recipe_list)
+        for dish in top_match_recipe_list:
+            reply_message.append(TextSendMessage(dish))
+        for dish in match_cnt_2_recipe_list:
+            reply_message.append(TextSendMessage(dish))
+    elif len(match_cnt_2_recipe_list) == 0 and len(single_ing_recipe_list) > 0:
+        reply_message.append(TextSendMessage("僅針對單一食材搜尋："))
+        shuffle(single_ing_recipe_list)
+        for dish in single_ing_recipe_list:
+            reply_message.append(TextSendMessage(dish))
+        else:
+            # 如果查詢的食材找不到食譜，訊息告知食譜資料庫查無資料，敬請期待更新
+            reply_message.append(TextSendMessage("食譜資料庫查無資料，敬請期待未來的版本更新！"))
+
+    if len(reply_message) > 4:
+        reply_message = reply_message[:4]
+    # print(reply_message)
+    return reply_message
 
 
 
@@ -79,7 +142,7 @@ def multiple_ingredient_search():
 
 # 測試用的code
 
-# ingredient_list = ['洋蔥', '豆腐', '雞胸肉']
-# # test = str(ingredient_list)
+# ingredient_list = ['鳳梨', '蝦子', '洋蔥']
+# '牛肉', '地瓜', '雞蛋'
 # test = multiple_ingredient_query(ingredient_list, len(ingredient_list))
-
+# test = multiple_ingredient_search(ingredient_list, len(ingredient_list))

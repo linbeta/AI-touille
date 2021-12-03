@@ -21,4 +21,3 @@ google-cloud-speech
 numpy
 requests
 jieba
-flask-wtf
