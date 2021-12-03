@@ -11,9 +11,8 @@ from linebot import (
 import os
 from daos.user_dao import UserDAO
 from linebot.models import (
-    TextSendMessage
+    TextSendMessage, QuickReply, QuickReplyButton, MessageAction,
 )
-
 
 # 圖片下載與上傳專用
 import urllib.request
@@ -25,7 +24,11 @@ from PIL import Image, ImageOps
 import numpy as np
 import time
 
+# 拿user資料
+from services.user_service import UserService
+
 import os
+from datetime import datetime
 
 from utils.reply_send_message import detect_json_array_to_new_message_array
 from utils.search_recipe import use_result_tag_to_query
@@ -55,10 +58,13 @@ class ImageService:
             for chunk in image_blob.iter_content():
                 fd.write(chunk)
 
-        # 上傳至照片暫存檔bucket: temp_food_image_mvp，這部分可以成功運作
+        user_object = UserService.get_user(event.source.user_id)
+        user_nickname = user_object.line_user_nickname
+
+        # 上傳至照片暫存檔bucket: temp_food_image_mvp
         storage_client = storage.Client()
         bucket_name = os.environ['USER_INFO_TEMP_BUCKET_NAME']
-        destination_blob_name = f'{event.source.user_id}/image/{event.message.id}.png'
+        destination_blob_name = f'{user_nickname}/image/{event.message.id}.png'
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(temp_file_path)
@@ -97,15 +103,14 @@ class ImageService:
         # run the inference
         prediction = model.predict(data)
         # print(prediction)
+
         # 取得預測值
         max_probability_item_index = np.argmax(prediction[0])
+        # 將預測值印出來
         # print(max_probability_item_index)
-        # 將預測值拿去尋找line_message
-        # 並依照該line_message，進行消息回覆，result_message_array是回傳給user的文字訊息(來自json檔)
-        # print(prediction.max())
-        if prediction.max() > 0.6:
-            # TODO: 3. 用選單讓讓user選他拍的是什麼東西，存到update_tag
 
+        # print(prediction.max())
+        if prediction.max() > 0.8:
             result_message_array = detect_json_array_to_new_message_array(
                 "line_message_json/"+class_dict.get(max_probability_item_index)+".json")
             result_tag = class_dict.get(max_probability_item_index)
@@ -123,6 +128,47 @@ class ImageService:
                 event.reply_token,
                 result_message_array
             )
+        # TODO: 用選單讓讓user選他拍的是什麼東西，存到update_tag
+        elif prediction.max() > 0.3:
+            # 取得預測前3大的labels
+            top_3_labels = prediction[0].argsort()[-3:][::-1]
+            # print(top_3_labels)
+
+            # 做一個回話的字串：請問這是蘿蔔，香菇，還是豬肉呢？
+            result_message = "請問這是"
+            for i, label_num in enumerate(top_3_labels):
+                item = class_dict.get(label_num)
+                result_tag += (item + "_")
+                if i == 2:
+                    result_message += ("還是" + item)
+                else:
+                    result_message += (item + "，")
+
+            result_message += "呢?"
+
+            # 製作3個Quick Reply buttons讓使用者選擇 + 1個以上皆非Quick Reply buttons選項
+            btn_1 = QuickReplyButton(
+                     action=MessageAction(label=class_dict[top_3_labels[0]], text=class_dict[top_3_labels[0]])
+                 )
+            btn_2 = QuickReplyButton(
+                     action=MessageAction(label=class_dict[top_3_labels[1]], text=class_dict[top_3_labels[1]])
+                 )
+            btn_3 = QuickReplyButton(
+                     action=MessageAction(label=class_dict[top_3_labels[2]], text=class_dict[top_3_labels[2]])
+                 )
+            btn_4 = QuickReplyButton(
+                     action=MessageAction(label="以上皆非", text="都不是喔！")
+                 )
+            # textQuickReplyButton = QuickReplyButton(
+            #          action=MessageAction(label="按鈕", text="檸檬")
+            #      )
+            quickReplyList = QuickReply(items=[btn_1, btn_2, btn_3, btn_4])
+
+            # 回傳給user預測前三強的可能，讓user用按鈕回覆
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=result_message, quick_reply=quickReplyList)
+            )
 
         else:
             cls.line_bot_api.reply_message(
@@ -137,10 +183,18 @@ class ImageService:
 
         storage_client = storage.Client()
         bucket_name = os.environ['FOOD_IMAGE_BUCKET_NAME']
-        # 目的地不分使用者，直接存在一起
-        destination_blob_name = f'image_uploaded/{result_tag}_{event.message.id}.png'
-        # 存訓練照片的桶子裡面，也依照user id來開資料夾
-        # destination_blob_name = f'{event.source.user_id}/image/{result_tag}_{event.message.id}.png'
+
+        # 寫一個判斷把團隊成員的測試照片分流出來，讓目的地都放真實使用者的照片
+        team_member = ["林芝吟 Beta", "Hugo（浩宇）", "。s。t。i。n。", "謝明劭", "Evelyn Lee", "cwl"]
+        # 存檔資料夾依照日期來分
+        now = datetime.now()
+        today = now.strftime("%Y-%m-%d")
+
+        if user_nickname in team_member:
+            destination_blob_name = f'team_test_img/{today}/{result_tag}_{event.message.id}.png'
+        else:
+            destination_blob_name = f'image_uploaded_by_date/{today}/{result_tag}_{event.message.id}.png'
+
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(temp_file_path)
@@ -150,7 +204,4 @@ class ImageService:
         os.remove(temp_file_path)
 
         # 回覆消息
-        # cls.line_bot_api.reply_message(
-        #     event.reply_token,
-        #     TextSendMessage(f"""圖片已上傳，請期待未來的AI服務！""")
-        # )
+

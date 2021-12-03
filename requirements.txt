@@ -17,3 +17,7 @@ google-cloud-bigquery
 google-cloud-bigquery-storage
 BigQuery-Python
 pyarrow
+google-cloud-speech
+numpy
+requests
+jieba

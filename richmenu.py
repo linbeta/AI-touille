@@ -14,7 +14,7 @@ import requests , json
 headers = {"Authorization":"Bearer "+CHANNEL_ACCESS_TOKEN,"Content-Type":"application/json"}
 
 body = {
-    "size": {"width": 2500, "height": 635},
+    "size": {"width": 2500, "height": 599},
     "selected": "true",
     "name": "圖文選單richmenu",
     "chatBarText": " ▲ ▼ 選單",
@@ -25,15 +25,15 @@ body = {
         },
         {
           "bounds": {"x": 625, "y": 0, "width": 625, "height": 635},
-          "action": {"type": "uri", "uri": "https://line.me/R/nv/cameraRoll/multi"}
+          "action": {"type": "uri", "uri": "https://line.me/R/nv/cameraRoll/multi"},
         },
         {
           "bounds": {"x": 1250, "y": 0, "width": 625, "height": 635},
-          "action": {"type": "uri", "uri": "https://docs.google.com/spreadsheets/d/1xlbx5NS3CkHv5dK9CyHWHmiRuEJgKwlRymHE_dtu5y4/edit?usp=sharing"}
+          "action": {"type": "uri", "uri": "https://line.me/R/nv/recommendOA/@096oeofl"}
         },
         {
           "bounds": {"x": 1875, "y": 0, "width": 625, "height": 635},
-          "action": {"type": "uri", "uri": "https://line.me/R/nv/recommendOA/@096oeofl"}
+          "action": {"type": "uri", "uri": "https://evelynlee.github.io/AItouille/"}
         }
     ]
   }
@@ -52,7 +52,7 @@ from linebot import (LineBotApi, WebhookHandler)
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 
 ## (! 配合圖片修改檔名"richmenu.jpg"及圖片形式"image/jpeg")
-with open("richmenu.jpg",'rb') as f:
+with open("pic/richmenu.jpg",'rb') as f:
     line_bot_api.set_rich_menu_image(richmenuId, "image/jpeg", f)
 
 
