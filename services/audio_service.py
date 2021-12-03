@@ -18,7 +18,7 @@ from linebot.models import (
 # 拿user資料
 from services.user_service import UserService
 # 搜尋食譜
-from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_query
+from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_search
 from utils.text_parsing import get_ingredients, get_intent
 
 # 檔案下載與上傳專用
@@ -111,7 +111,7 @@ class AudioService:
             )
         else:
             # TODO: 串接資料庫->複數食材搜尋
-            dishes = multiple_ingredient_query(ingredients_from_audio, len(ingredients_from_audio))
+            dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio))
             reply_msg += dishes
             # 回覆訊息給使用者
             cls.line_bot_api.reply_message(

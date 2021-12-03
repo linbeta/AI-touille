@@ -16,7 +16,7 @@ from linebot.models import (
     TextSendMessage
 )
 # 搜尋食譜
-from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_query
+from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_search
 from utils.text_parsing import get_ingredients, get_intent
 
 class TextService:
@@ -48,7 +48,7 @@ class TextService:
             else:
                 # TODO: 串接資料庫->複數食材搜尋
                 # print(ingredients)
-                dishes = multiple_ingredient_query(ingredients, len(ingredients))
+                dishes = multiple_ingredient_search(ingredients, len(ingredients))
                 # print(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
