@@ -8,14 +8,15 @@ import pandas as pd
 import json
 import csv
 
-def insertRecipe(dish_name, dish_url, seasoning):
+
+
+def insertRecipe(dish_name, dish_url):
     print ("dish_name: "+ dish_name)
     # print(type(dish_name))
     # print(len(dish_name))
 
-    if len(dish_name)>0:
-        # QUERY = "SELECT count(id) FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "'" 
-        QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "' limit 1" 
+    if len(dish_url)>0:
+        QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where URL='" + dish_url + "' limit 1" 
 
         query_job = client.query(QUERY)  # API request
         rows = query_job.result()  # Waits for query to finish
@@ -49,9 +50,10 @@ def insertRecipe(dish_name, dish_url, seasoning):
             elif str(dish_url).find("youtube")>1:
                 print("youtube")
                 publisher_id=7
-
+            
             # cur_time=datetime.timestamp(datetime.now())
             # print (cur_time)
+            seasoning=""
             QUERY = "insert into ratatouille-ai.recipebot.recipe (id,recipe_name,URL,publisher_id,process_time,complexity,seasoning, abstract, created_time,updated_time) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe),'"\
             + dish_name + "','" + dish_url + "',"+ str(publisher_id) + ",'30','M','" + seasoning + "','',(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
             # print (QUERY)
@@ -80,7 +82,7 @@ def insertRecipe(dish_name, dish_url, seasoning):
 
 def insertMaterials (material_string):
     print (material_string)
-    material_string = str(material_string).replace(" ", ",")
+    # material_string = str(material_string).replace(" ", ",")
     materials = str(material_string).split(",")
     # print (materials)
     material_id = ""
@@ -126,14 +128,14 @@ def insertMaterials (material_string):
 
 def insertRecipeMaterial(recipe_id,material_ids_string):
     material_ids = str(material_ids_string).split(",")
-
+    # print (material_ids)
     for i in material_ids:
-        QUERY = "SELECT count(*) FROM ratatouille-ai.recipebot.recipe_material where recipe_id=" + str(recipe_id)  + " and material_id=" +str(i) 
-
+        QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe_material where recipe_id=" + str(recipe_id)  + " and material_id=" +str(i) 
+        # print (QUERY)
         query_job = client.query(QUERY)  # API request
         rows = query_job.result()  # Waits for query to finish
     
-        if rows.num_results==0:
+        if rows.total_rows==0:
             print("insert relations: recipe_id: "+ str(recipe_id) + " ; material_id: "+ str(i))
             QUERY = "Insert into ratatouille-ai.recipebot.recipe_material (id, recipe_id, material_id, created_time,updated_time) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe_material),"+ str(recipe_id) + ","+ i + ",(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
 
@@ -155,11 +157,11 @@ with open('recipes_for_import.csv',encoding='utf8') as file:
         # choice = str(row[2]).strip()
         dish_name = str(row[3]).strip()
         dish_url = str(row[4]).strip()
-        seasoning = str(row[6]).strip()
+        # seasoning = str(row[6]).strip()
         if stored =="Y":
             print (dish_name + " is already stored. Skip processing")
         else:
-            recipe_id = insertRecipe(dish_name, dish_url, seasoning)
+            recipe_id = insertRecipe(dish_name, dish_url)
             print ("we get recipe_id: " + str(recipe_id))
             materials = str(row[5]).strip() 
             print ("we get materials: " + materials)
