@@ -5,7 +5,6 @@ from linebot.models import (TextSendMessage)
 from services.user_service import UserService
 import os
 
-
 @classmethod
 def line_user_upload_image(cls, event):
     line_bot_api = LineBotApi(

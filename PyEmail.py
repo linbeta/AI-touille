@@ -3,6 +3,7 @@
 # (信件設定參考：https://www.learncodewithmike.com/2020/02/python-email.html)
 # (flask參考：https://hackmd.io/@shaoeChen/HJiZtEngG/https%3A%2F%2Fhackmd.io%2Fs%2FByofdR1XG)
 
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib , os
