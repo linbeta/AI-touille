@@ -31,7 +31,7 @@ import os
 from datetime import datetime
 
 from utils.reply_send_message import detect_json_array_to_new_message_array
-from utils.search_recipe import use_result_tag_to_query
+from utils.search_recipe import multiple_ingredient_search
 
 model = tensorflow.keras.models.load_model(
     'converted_savedmodel/model.savedmodel')
@@ -116,7 +116,7 @@ class ImageService:
             result_tag = class_dict.get(max_probability_item_index)
             # print(result_tag)
             # 用result_tag來去搜尋食譜資料庫
-            push_recipe = use_result_tag_to_query(result_tag)
+            push_recipe = multiple_ingredient_search([result_tag])
             # 搜尋資料庫得到食譜連結，並把它轉成可以回傳給user的文字訊息格式存成push_recipe
             # print(push_recipe)
 
