@@ -39,13 +39,13 @@ class TextService:
             ingredients = cls.get_ingredients(user_message)
             if len(ingredients) == 0:
                 # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
-                reply_message = cls.get_ingredients(user_message)
+                reply_message = cls.get_intent(user_message)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
                     TextSendMessage(reply_message)
                 )
             else:
-                # TODO: 串接資料庫->複數食材搜尋
+                # 串接資料庫->複數食材搜尋
                 # print(ingredients)
                 dishes = multiple_ingredient_search(ingredients, len(ingredients))
                 # print(dishes)
