@@ -19,7 +19,6 @@ from linebot.models import (
 from services.user_service import UserService
 # 搜尋食譜
 from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_search
-from utils.text_parsing import get_ingredients, get_intent
 
 # 檔案下載與上傳專用
 import urllib.request
