@@ -17,7 +17,7 @@ body = {
     "size": {"width": 2500, "height": 599},
     "selected": "true",
     "name": "圖文選單richmenu",
-    "chatBarText": " ▲ ▼ 選單",
+    "chatBarText": "⇤左側開⌨🎤   點這開選單",
     "areas":[
         {
           "bounds": {"x": 0, "y": 0, "width": 625, "height": 635},
@@ -39,7 +39,7 @@ body = {
   }
 
 req = requests.request('POST', 'https://api.line.me/v2/bot/richmenu',
-                       headers=headers,data=json.dumps(body).encode('utf-8'))#
+                       headers=headers,data=json.dumps(body).encode('utf-8'))
 
 richmenuId = json.loads(req.text).get("richMenuId")
 
@@ -47,7 +47,7 @@ print(richmenuId)
 
 # ========== 在line_bot上設定 Rich menus 的圖片，透過 line-bot-sdk-python 來將圖片掛上該圖文選單 ==========
 
-from linebot import (LineBotApi, WebhookHandler)
+from linebot import (LineBotApi)
 
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 
