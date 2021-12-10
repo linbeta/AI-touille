@@ -11,6 +11,7 @@ from linebot import (
 )
 
 import os
+import jieba
 from daos.user_dao import UserDAO
 from linebot.models import (
     TextSendMessage, CarouselTemplate, CarouselColumn, URITemplateAction, PostbackAction, TemplateSendMessage
@@ -55,25 +56,25 @@ class TextService:
                     new_template
                 )
 
+
+    # 用結巴分詞抓出資料庫中有的食材的新方法
     @classmethod
     def get_ingredients(cls, text):
-        # 拿labels.txt來做食材的class_list
-        class_list = []
-        with open('converted_savedmodel/labels.txt', encoding="utf-8") as f:
-            for line in f:
-                (key, val) = line.split()
-                class_list.append(val)
+        jieba.load_userdict("text_files/materials.txt")
+        sentence_cut = jieba.lcut(text)
+        # print(sentence_cut)
+        # 用result來存輸入文字切出來的可搜尋食材list
         result = []
-
-        for item in class_list:
-            if item in text and (item not in result):
-                if "洋蔥" in result:
-                    pass
-                else:
-                    result.append(item)
-            elif item in ["豬肉片", "豬五花", "豬絞肉"] and ("豬" in text) and ("豬肉" not in result):
-                result.append("豬肉")
+        materials = []
+        with open("text_files/materials.txt", "r", encoding="utf-8") as f:
+            for item in f:
+                materials.append(item.strip())
+            for word in sentence_cut:
+                if word in materials:
+                    result.append(word)
+        # print(result)
         return result
+
 
     # 用這個方法來判斷user傳訊息的意圖
     @classmethod
@@ -205,50 +206,3 @@ class TextService:
             )
         )
         return test_template_message
-
-
-
-
-        # test_template_message = TemplateSendMessage(
-        #     alt_text='Image Carousel Template',
-        #     template=ImageCarouselTemplate(
-        #         columns=[
-        #             ImageCarouselColumn(
-        #                 image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
-        #                 # action=PostbackAction(
-        #                 #     # label='喜歡',
-        #                 #     label=dishes[0][:11],
-        #                 #     # uri="https://www.google.com/"
-        #                 #     display_text='dish~',
-        #                 #     # display_text=top_match_recipe_list[0],
-        #                 #     data='待處理'
-        #                 # )
-        #             ),
-        #             # ImageCarouselColumn(
-        #             #     image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
-        #             #     action=PostbackAction(
-        #             #         label='喜歡',
-        #             #         # label=dishes[1],
-        #             #         display_text='dish~',
-        #             #         data='待處理'
-        #             #     )
-        #             # ),
-        #             # ImageCarouselColumn(
-        #             #     image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
-        #             #     action=PostbackAction(
-        #             #         label='喜歡',
-        #             #         # label=dishes[2],
-        #             #         display_text='dish~',
-        #             #         data='待處理'
-        #             #     )
-        #             # ),
-        #         ]
-        #     )
-        # )
-        # return test_template_message
-
-
-
-#驗證
-#label長度
-#額外開一個py檔案吃資料
