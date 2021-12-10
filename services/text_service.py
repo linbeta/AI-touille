@@ -50,10 +50,9 @@ class TextService:
                 # 串接資料庫->複數食材搜尋
                 # print(ingredients)
                 dishes = multiple_ingredient_search(ingredients, len(ingredients))
-                new_template = cls.make_template(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
-                    new_template
+                    dishes
                 )
 
 
@@ -62,7 +61,7 @@ class TextService:
     def get_ingredients(cls, text):
         jieba.load_userdict("text_files/materials.txt")
         sentence_cut = jieba.lcut(text)
-        # print(sentence_cut)
+        # print("輸入句子分詞: ", sentence_cut)
         # 用result來存輸入文字切出來的可搜尋食材list
         result = []
         materials = []
@@ -72,7 +71,7 @@ class TextService:
             for word in sentence_cut:
                 if word in materials:
                     result.append(word)
-        # print(result)
+        # print("食材列表：", result)
         return result
 
 
@@ -122,6 +121,41 @@ class TextService:
             result = "阿哈！我聽不懂喔~ 更多功能開發中，敬請期待未來的AI服務"
 
         return result
+
+# ================== 施工區分隔線 ======================
+
+# TODO:開發中的程式碼=>用卡片的方式呈現食譜，可直接點喜歡收藏食譜，postback功能待研究
+#     @classmethod
+#     def line_user_send_text_message(cls, event):
+#         '''
+#         載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
+#         '''
+#         # TODO：串接資料庫
+#         if event.message.text == "都不是喔！":
+#             cls.line_bot_api.reply_message(
+#                 event.reply_token,
+#                 TextSendMessage("那請問這是什麼？XD")
+#             )
+#         else:
+#             user_message = event.message.text
+#             ingredients = cls.get_ingredients(user_message)
+#             if len(ingredients) == 0:
+#                 # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+#                 reply_message = cls.get_intent(user_message)
+#                 cls.line_bot_api.reply_message(
+#                     event.reply_token,
+#                     TextSendMessage(reply_message)
+#                 )
+#             else:
+#                 # 串接資料庫->複數食材搜尋
+#                 # print(ingredients)
+#                 dishes = multiple_ingredient_search(ingredients, len(ingredients))
+#                 new_template = cls.make_template(dishes)
+#                 cls.line_bot_api.reply_message(
+#                     event.reply_token,
+#                     new_template
+#                 )
+
 
     # 注意: 所有網址都只吃https
     @classmethod
