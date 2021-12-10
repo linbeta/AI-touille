@@ -17,7 +17,7 @@ body = {
     "size": {"width": 2500, "height": 599},
     "selected": "true",
     "name": "圖文選單richmenu",
-    "chatBarText": " ▲ ▼ 選單",
+    "chatBarText": "⇤左側開⌨🎤   點這開選單",
     "areas":[
         {
           "bounds": {"x": 0, "y": 0, "width": 625, "height": 635},
@@ -33,7 +33,7 @@ body = {
         },
         {
           "bounds": {"x": 1875, "y": 0, "width": 625, "height": 635},
-          "action": {"type": "uri", "uri": "https://evelynlee.github.io/AItouille/"}
+          "action": {"type": "uri", "uri": "https://liff.line.me/1656700369-VlnBxlo4"}
         }
     ]
   }
