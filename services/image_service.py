@@ -108,17 +108,17 @@ class ImageService:
         max_probability_item_index = np.argmax(prediction[0])
         # 將預測值印出來
         # print(max_probability_item_index)
-
+        result_tag = "00"
         # print(prediction.max())
         if prediction.max() > 0.8:
             result_message_array = detect_json_array_to_new_message_array(
                 "line_message_json/"+class_dict.get(max_probability_item_index)+".json")
             result_tag = class_dict.get(max_probability_item_index)
-            # print(result_tag)
+            # print("result_tag: ", result_tag)
             # 用result_tag來去搜尋食譜資料庫
             recipes = multiple_ingredient_search([result_tag], 1)
             # 搜尋資料庫得到食譜連結，並把它轉成可以回傳給user的文字訊息格式存成push_recipe
-            # print(push_recipe)
+            # print(recipes)
 
             # 把拿到的食譜資訊接到result_message_array
             result_message_array += recipes
@@ -185,7 +185,7 @@ class ImageService:
         bucket_name = os.environ['FOOD_IMAGE_BUCKET_NAME']
 
         # 寫一個判斷把團隊成員的測試照片分流出來，讓目的地都放真實使用者的照片
-        team_member = ["林芝吟 Beta", "Hugo（浩宇）", "。s。t。i。n。", "謝明劭", "Evelyn Lee", "cwl"]
+        team_member = ["林芝吟 Beta", "Hugo（浩宇）", "。s。t。i。n。", "謝明劭", "Evelyn Lee", "cwl", "黃金ㄤㄤ包", "Charles (洪士恆)"]
         # 存檔資料夾依照日期來分
         now = datetime.now()
         today = now.strftime("%Y-%m-%d")
