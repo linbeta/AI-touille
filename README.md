@@ -7,7 +7,7 @@ AI-touille 愛廚易 Line Bot AI 機器人讓您可以藉由直接拍照、挑�
 掃描 QR-Code 加好友：
 
 ID: @096oeofl
-![img.png](images for readme/img.png)
+![img.png](./images for readme/img.png)
 
 
 ## 版本更新紀錄
