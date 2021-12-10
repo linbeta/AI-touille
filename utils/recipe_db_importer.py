@@ -129,17 +129,23 @@ def insertRecipeMaterial(recipe_id,material_ids_string):
     material_ids = str(material_ids_string).split(",")
 
     for i in material_ids:
-        QUERY = "SELECT count(*) FROM ratatouille-ai.recipebot.recipe_material where recipe_id=" + str(recipe_id)  + " and material_id=" +str(i) 
+        print("insert relations: recipe_id: "+ str(recipe_id) + " ; material_id: "+ str(i))
+        QUERY = "Insert into ratatouille-ai.recipebot.recipe_material (id, recipe_id, material_id, created_time,updated_time) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe_material),"+ str(recipe_id) + ","+ i + ",(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
 
         query_job = client.query(QUERY)  # API request
         rows = query_job.result()  # Waits for query to finish
-    
-        if rows.num_results==0:
-            print("insert relations: recipe_id: "+ str(recipe_id) + " ; material_id: "+ str(i))
-            QUERY = "Insert into ratatouille-ai.recipebot.recipe_material (id, recipe_id, material_id, created_time,updated_time) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe_material),"+ str(recipe_id) + ","+ i + ",(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
+    # for i in material_ids:
+    #     QUERY = "SELECT count(*) FROM ratatouille-ai.recipebot.recipe_material where recipe_id=" + str(recipe_id)  + " and material_id=" +str(i) 
 
-            query_job = client.query(QUERY)  # API request
-            rows = query_job.result()  # Waits for query to finish
+    #     query_job = client.query(QUERY)  # API request
+    #     rows = query_job.result()  # Waits for query to finish
+    
+    #     if rows.num_results==0:
+    #         print("insert relations: recipe_id: "+ str(recipe_id) + " ; material_id: "+ str(i))
+    #         QUERY = "Insert into ratatouille-ai.recipebot.recipe_material (id, recipe_id, material_id, created_time,updated_time) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe_material),"+ str(recipe_id) + ","+ i + ",(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
+
+    #         query_job = client.query(QUERY)  # API request
+    #         rows = query_job.result()  # Waits for query to finish
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
