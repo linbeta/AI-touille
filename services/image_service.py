@@ -116,12 +116,12 @@ class ImageService:
             result_tag = class_dict.get(max_probability_item_index)
             # print(result_tag)
             # 用result_tag來去搜尋食譜資料庫
-            push_recipe = multiple_ingredient_search([result_tag])
+            recipes = multiple_ingredient_search([result_tag], 1)
             # 搜尋資料庫得到食譜連結，並把它轉成可以回傳給user的文字訊息格式存成push_recipe
             # print(push_recipe)
 
-            # 把拿到的食譜資訊append到result_message_array
-            result_message_array.append(push_recipe)
+            # 把拿到的食譜資訊接到result_message_array
+            result_message_array += recipes
             # print(result_message_array)
             # 把食譜網址回傳給user
             cls.line_bot_api.reply_message(

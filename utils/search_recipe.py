@@ -7,6 +7,7 @@ from linebot.models import TextSendMessage
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
 client = bq.Client()
 
+
 def use_result_tag_to_query(ingredient_main):
     try:
         QUERY = (
@@ -34,38 +35,6 @@ def use_result_tag_to_query(ingredient_main):
         return reply_message
 
 
-def multiple_ingredient_query(ingredient_list, ing_num):
-    # 先把ingredient_list轉成可用的string一整串
-    ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
-    QUERY = (
-        f"SELECT distinct b.recipe_name, b.URL, c.name, {ing_num} as user_material_cnt, (select count(x.id) "
-        f"FROM `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y, "
-        f"`ratatouille-ai.recipebot.recipe` z WHERE x.material_id = y.id and x.recipe_id = z.id and trim(y.name) "
-        f"in ({ingredient_list_str}) and z.recipe_name = b.recipe_name) as match_cnt, "
-        f"(SELECT count(material_id) FROM `ratatouille-ai.recipebot.recipe_material` WHERE recipe_id = b.id) "
-        f"as recipe_material_cnt "
-        f"FROM `ratatouille-ai.recipebot.recipe_material` as a, `ratatouille-ai.recipebot.recipe` as b, "
-        f"`ratatouille-ai.recipebot.material` as c WHERE a.recipe_id = b.id and a.material_id = c.id and "
-        f"trim(c.name) in ({ingredient_list_str}) order by match_cnt desc, recipe_material_cnt asc, b.recipe_name "
-        f"LIMIT 10;"
-    )
-    query_job = client.query(QUERY)
-    rows = query_job.result()
-    # 取前4個食譜做成list
-    reply_recipe_list = []
-    for row in rows:
-        # print(row)
-        dish = row[0] + " " + row[1]
-        if dish not in reply_recipe_list:
-            reply_recipe_list.append(dish)
-            print(dish)
-    reply_message = []
-    for dish in reply_recipe_list[:4]:
-        reply_message.append(TextSendMessage(dish))
-    # print(reply_message)
-    return reply_message
-
-
 def multiple_ingredient_search(ingredient_list, ing_num):
     # TODO: 新資料庫新的query方法
     ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
@@ -87,15 +56,18 @@ def multiple_ingredient_search(ingredient_list, ing_num):
     query_job = client.query(QUERY)
     rows = query_job.result()
     reply_message = []
-    # 取前4個食譜做成list
+    # 把搜尋結果分成3種recipe_list
     top_match_recipe_list = []
     match_cnt_2_recipe_list = []
     single_ing_recipe_list = []
     for row in rows:
         # print(row)
+        # dish是從搜尋結果中抓出row[1]:食譜名稱，row[2]:食譜網址做成一串string
         dish = row[1] + " " + row[2]
-        # 測試用的dish
+        ### 測試用的dish，會印出match_cnt ###
         # dish = row[1] + " " + row[2] + f" match_cnt: {row[4]}"
+
+        # row[3]:丟進來搜尋的食材list總數量，row[4]:match_cnt用來計算包含幾種食材，以下用來判斷每個食譜要存到哪個recipe_list
         if row[4] == row[3]:
             top_match_recipe_list.append(dish)
         elif row[4] == row[3] - 1:
@@ -134,10 +106,22 @@ def multiple_ingredient_search(ingredient_list, ing_num):
     return reply_message
 
 
+# 從Big Query中`ratatouille-ai.recipebot.material`這個資料表抓出所有的材料名字，做成一份txt檔當作分詞的字典
+def get_all_material_names():
+    QUERY = (
+        f"SELECT m.name FROM `ratatouille-ai.recipebot.material` as m"
+    )
+    query_job = client.query(QUERY)
+    rows = query_job.result()
+    # for row in rows:
+    #     print(row[0])
+    with open("text_files/materials.txt", "w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(row[0] + "\n")
 
-# 測試用的code
-# result_tag = "豬肉"
-# print(use_result_tag_to_query(result_tag))
+
+# 如果要重做食材字典，run底下這行，執行這個函式即可
+# get_all_material_names()
 
 
 # 測試用的code
@@ -146,3 +130,30 @@ def multiple_ingredient_search(ingredient_list, ing_num):
 # '牛肉', '地瓜', '雞蛋'
 # test = multiple_ingredient_query(ingredient_list, len(ingredient_list))
 # test = multiple_ingredient_search(ingredient_list, len(ingredient_list))
+
+
+
+
+# Testing
+import jieba
+
+
+# def get_ingredients(text):
+#     jieba.load_userdict("text_files/materials.txt")
+#     sentence_cut = jieba.lcut(text)
+#     print(sentence_cut)
+#     result = []
+#     materials = []
+#     with open("text_files/materials.txt", "r", encoding="utf-8") as f:
+#         for item in f:
+#             materials.append(item.strip())
+#         for word in sentence_cut:
+#             if word in materials:
+#                 result.append(word)
+#
+#     return result
+
+
+# sentence = "我冰箱裏面有水餃高麗菜皮蛋，還有花椰菜和雞胸肉，晚餐不知道可以吃甚麼"
+# test = get_ingredients(sentence)
+# print(test)
