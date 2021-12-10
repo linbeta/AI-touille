@@ -15,18 +15,19 @@ def insertRecipe(dish_name, dish_url, seasoning):
 
     if len(dish_name)>0:
         # QUERY = "SELECT count(id) FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "'" 
-        QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "' limit 1" 
+        # QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "' limit 1" 
+        QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where URL='" + dish_url + "' limit 1" 
 
         query_job = client.query(QUERY)  # API request
         rows = query_job.result()  # Waits for query to finish
 
         num_results = rows.total_rows
-        print ("rows.num_results: " + str(num_results))
+        print ("total_rows: " + str(num_results))
         
         # for row in rows:
         if num_results ==0:
         # if (row[0]) == 0:
-            print("bingo! Inserting " +dish_name)
+            print("Bingo! Inserting " +dish_name)
                             
             if str(dish_url).find("icook")>1:
                 print("icook")
@@ -72,15 +73,15 @@ def insertRecipe(dish_name, dish_url, seasoning):
             return r_id
         else:
             for row in rows:
-                print ("Recipie found in DB. id: "+str(row[0]))
+                print ("Recipe URL found in DB. id: "+str(row[0]))
                 r_id=row[0]
-            return r_id
+            return -1
     else:
-        return -1
+        return -2
 
 def insertMaterials (material_string):
     print (material_string)
-    material_string = str(material_string).replace(" ", ",")
+    # material_string = str(material_string).replace(" ", ",")
     materials = str(material_string).split(",")
     # print (materials)
     material_id = ""
@@ -93,12 +94,12 @@ def insertMaterials (material_string):
             query_job = client.query(QUERY)  # API request
             rows = query_job.result()  # Waits for query to finish
 
-            print(str(rows.total_rows)+" records of " + str(i) + " found in database.")
+            print(str(rows.total_rows)+" records of " + str(i).strip() + " found in database.")
             
             if rows.total_rows==0:
                 # print (row)
                 # if (row[0]) == 0:
-                print("bingo! Inserting " + i)
+                print("bingo! Inserting " + str(i).strip())
                 QUERY = "SELECT count(id)+1 FROM ratatouille-ai.recipebot.material" 
 
                 query_job = client.query(QUERY)  # API request
@@ -141,7 +142,7 @@ def insertRecipeMaterial(recipe_id,material_ids_string):
             rows = query_job.result()  # Waits for query to finish
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "ratatouille-ai-e6daa9d44a92.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
 client = bq.Client()
 
 with open('recipes_for_import.csv',encoding='utf8') as file:
@@ -155,17 +156,21 @@ with open('recipes_for_import.csv',encoding='utf8') as file:
         # choice = str(row[2]).strip()
         dish_name = str(row[3]).strip()
         dish_url = str(row[4]).strip()
-        seasoning = str(row[6]).strip()
+        materials = str(row[5]).strip()
+        # seasoning = str(row[5]).strip()
+        seasoning = ""
         if stored =="Y":
             print (dish_name + " is already stored. Skip processing")
         else:
             recipe_id = insertRecipe(dish_name, dish_url, seasoning)
             print ("we get recipe_id: " + str(recipe_id))
-            materials = str(row[5]).strip() 
-            print ("we get materials: " + materials)
-            material_id_string = insertMaterials(materials)
-            print ("we get material ids: " + material_id_string)
-            insertRecipeMaterial(recipe_id, material_id_string)
+            if recipe_id == -1:
+                print ("Recipe already in DB. Skip processing")
+            else: 
+                print ("we get materials: " + materials)
+                material_id_string = insertMaterials(materials)
+                print ("we get material ids: " + material_id_string)
+                insertRecipeMaterial(recipe_id, material_id_string)
             
 
 print("匯入完成！")
