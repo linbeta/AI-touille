@@ -7,6 +7,7 @@ from linebot.models import TextSendMessage
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
 client = bq.Client()
 
+
 def use_result_tag_to_query(ingredient_main):
     try:
         QUERY = (
@@ -92,7 +93,6 @@ def multiple_ingredient_search(ingredient_list, ing_num):
     match_cnt_2_recipe_list = []
     single_ing_recipe_list = []
     for row in rows:
-        # print(row)
         dish = row[1] + " " + row[2]
         # 測試用的dish
         # dish = row[1] + " " + row[2] + f" match_cnt: {row[4]}"
@@ -105,34 +105,43 @@ def multiple_ingredient_search(ingredient_list, ing_num):
         elif row[4] == 1:
             # reply_message.append(TextSendMessage("單一食材搜尋食譜如下："))
             single_ing_recipe_list.append(dish)
-
     if len(top_match_recipe_list) > 3:
         shuffle(top_match_recipe_list)
         # 如果超過4個，只取洗牌後的前4個出來
         if len(top_match_recipe_list) > 4:
             top_match_recipe_list = top_match_recipe_list[:4]
-        for dish in top_match_recipe_list:
-            reply_message.append(TextSendMessage(dish))
+
+        return top_match_recipe_list
+        # for dish in top_match_recipe_list:
+        #     reply_message.append(TextSendMessage(dish))
+
     elif len(top_match_recipe_list) < 4 and len(match_cnt_2_recipe_list) > 0:
         shuffle(match_cnt_2_recipe_list)
-        for dish in top_match_recipe_list:
-            reply_message.append(TextSendMessage(dish))
-        for dish in match_cnt_2_recipe_list:
-            reply_message.append(TextSendMessage(dish))
+        return match_cnt_2_recipe_list
+        # for dish in top_match_recipe_list:
+        #     reply_message.append(TextSendMessage(dish))
+        # for dish in match_cnt_2_recipe_list:
+        #     reply_message.append(TextSendMessage(dish))
     elif len(match_cnt_2_recipe_list) == 0 and len(single_ing_recipe_list) > 0:
         reply_message.append(TextSendMessage("僅針對單一食材搜尋："))
         shuffle(single_ing_recipe_list)
-        for dish in single_ing_recipe_list:
-            reply_message.append(TextSendMessage(dish))
-        else:
-            # 如果查詢的食材找不到食譜，訊息告知食譜資料庫查無資料，敬請期待更新
-            reply_message.append(TextSendMessage("食譜資料庫查無資料，敬請期待未來的版本更新！"))
+        return single_ing_recipe_list
+        # for dish in single_ing_recipe_list:
+        #     reply_message.append(TextSendMessage(dish))
+    else:
+        # 如果查詢的食材找不到食譜，訊息告知食譜資料庫查無資料，敬請期待更新
+        reply_message.append(TextSendMessage("食譜資料庫查無資料，敬請期待未來的版本更新！"))
 
-    if len(reply_message) > 4:
-        reply_message = reply_message[:4]
+
+
     # print(reply_message)
-    return reply_message
+    # print(reply_message[0]["text"])
+    # if len(reply_message) > 4:
+    #     reply_message = reply_message[:4]
+    # print(reply_message)
 
+    # return reply_message
+    # return test_template_message
 
 
 # 測試用的code
