@@ -14,7 +14,7 @@ import os
 import jieba
 from daos.user_dao import UserDAO
 from linebot.models import (
-    TextSendMessage
+    TextSendMessage, CarouselTemplate, CarouselColumn, URITemplateAction, PostbackAction, TemplateSendMessage
 )
 # 搜尋食譜
 
@@ -50,10 +50,10 @@ class TextService:
                 # 串接資料庫->複數食材搜尋
                 # print(ingredients)
                 dishes = multiple_ingredient_search(ingredients, len(ingredients))
-                # print(dishes)
+                new_template = cls.make_template(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
-                    dishes
+                    new_template
                 )
 
 
@@ -123,4 +123,86 @@ class TextService:
 
         return result
 
-
+    # 注意: 所有網址都只吃https
+    @classmethod
+    def make_template(cls, dishes):
+        test_template_message = TemplateSendMessage(
+            alt_text='Carousel template',
+            template=CarouselTemplate(
+                columns=[
+                    CarouselColumn(
+                        # todo: 爬蟲抓圖片網址後取值~~~~~~~~
+                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
+                        title=dishes[0][:7],  # todo: 取值規則待寫~~~~~~~~~~~~~~~~
+                        text='請點選連結',
+                        actions=[
+                            URITemplateAction(
+                                label='連結點這邊',
+                                uri='https://www.google.com'  # todo: 可練習用正規表達去切 抓取https網址~~~~~~~~
+                            ),
+                            PostbackAction(
+                                label='喜歡',
+                                # label=dishes[2],
+                                display_text='dish~',
+                                data='待處理'   # todo: 使用者按讚之後, 取data紀錄喜好
+                            )
+                        ]
+                    ),
+                    CarouselColumn(
+                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
+                        # title='標題1',
+                        title=dishes[1][:7],
+                        text='請點選連結',
+                        actions=[
+                            URITemplateAction(
+                                label='連結點這邊',
+                                uri='https://www.google.com'
+                            ),
+                            PostbackAction(
+                                label='喜歡',
+                                # label=dishes[2],
+                                display_text='dish~',
+                                data='待處理'
+                            )
+                        ]
+                    ),
+                    CarouselColumn(
+                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
+                        # title='標題1',
+                        title=dishes[2][:7],
+                        text='請點選連結',
+                        actions=[
+                            URITemplateAction(
+                                label='連結點這邊',
+                                uri='https://www.google.com'
+                            ),
+                            PostbackAction(
+                                label='喜歡',
+                                # label=dishes[2],
+                                display_text='dish~',
+                                data='待處理'
+                            )
+                        ]
+                    ),
+                    CarouselColumn(
+                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
+                        # title='標題1',
+                        title=dishes[3][:7],
+                        text='請點選連結',
+                        actions=[
+                            URITemplateAction(
+                                label='連結點這邊',
+                                uri='https://www.google.com'
+                            ),
+                            PostbackAction(
+                                label='喜歡',
+                                # label=dishes[2],
+                                display_text='dish~',
+                                data='待處理'
+                            )
+                        ]
+                    ),
+                ]
+            )
+        )
+        return test_template_message
