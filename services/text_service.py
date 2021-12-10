@@ -11,6 +11,7 @@ from linebot import (
 )
 
 import os
+import jieba
 from daos.user_dao import UserDAO
 from linebot.models import (
     TextSendMessage
@@ -18,6 +19,7 @@ from linebot.models import (
 # 搜尋食譜
 
 from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_search
+
 
 class TextService:
     line_bot_api = LineBotApi(
@@ -54,25 +56,25 @@ class TextService:
                     dishes
                 )
 
+
+    # 用結巴分詞抓出資料庫中有的食材的新方法
     @classmethod
     def get_ingredients(cls, text):
-        # 拿labels.txt來做食材的class_list
-        class_list = []
-        with open('converted_savedmodel/labels.txt', encoding="utf-8") as f:
-            for line in f:
-                (key, val) = line.split()
-                class_list.append(val)
+        jieba.load_userdict("text_files/materials.txt")
+        sentence_cut = jieba.lcut(text)
+        # print(sentence_cut)
+        # 用result來存輸入文字切出來的可搜尋食材list
         result = []
-
-        for item in class_list:
-            if item in text and (item not in result):
-                if "洋蔥" in result:
-                    pass
-                else:
-                    result.append(item)
-            elif item in ["豬肉片", "豬五花", "豬絞肉"] and ("豬" in text) and ("豬肉" not in result):
-                result.append("豬肉")
+        materials = []
+        with open("text_files/materials.txt", "r", encoding="utf-8") as f:
+            for item in f:
+                materials.append(item.strip())
+            for word in sentence_cut:
+                if word in materials:
+                    result.append(word)
+        # print(result)
         return result
+
 
     # 用這個方法來判斷user傳訊息的意圖
     @classmethod
@@ -120,6 +122,5 @@ class TextService:
             result = "阿哈！我聽不懂喔~ 更多功能開發中，敬請期待未來的AI服務"
 
         return result
-
 
 
