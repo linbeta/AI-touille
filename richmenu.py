@@ -33,7 +33,7 @@ body = {
         },
         {
           "bounds": {"x": 1875, "y": 0, "width": 625, "height": 635},
-          "action": {"type": "uri", "uri": "https://evelynlee.github.io/AItouille/"}
+          "action": {"type": "uri", "uri": "https://liff.line.me/1656700369-VlnBxlo4"}
         }
     ]
   }

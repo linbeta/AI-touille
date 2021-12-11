@@ -1,6 +1,19 @@
 # AI-touille 愛廚易
 
+AI-touille 愛廚易 Line Bot AI 機器人讓您可以藉由直接拍照、挑選圖檔或語音，輸入您想烹調的食材的名稱，經過 AI 程式挑選之後(嘿嘿~，電腦不只會挑花生，也會選食譜囉!)，將合適的食譜推薦給您，讓您不用再為煮什麼菜傷透腦筋!!
+
+官網圖文介紹：https://evelynlee.github.io/AItouille/
+
+掃描 QR-Code 加好友：
+
+ID: @096oeofl
+
+![img.png](https://github.com/linbeta/AI-touille/blob/main/images%20for%20readme/img.png)
+
+
 ## 版本更新紀錄
+
+```v2.1.0``` 導入 jieba 分詞，擴充語音及文字搜尋可支援的食材；更新影像辨識模型，增加13個辨識類別；食譜擴充，增加300+。
 
 ```v2.0.0``` 複數食材搜尋，更新文字處理。
 
