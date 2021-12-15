@@ -41,7 +41,7 @@ class AudioService:
     '''
 
     @classmethod
-    def line_user_upload_video(cls, event):
+    def line_user_upload_audio(cls, event):
 
         # 取出音檔
         image_blob = cls.line_bot_api.get_message_content(event.message.id)
@@ -111,9 +111,10 @@ class AudioService:
             # TODO: 串接資料庫->複數食材搜尋
             dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio))
             new_template = TextService.make_template(dishes)
+            reply_msg.append(new_template)
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                new_template
+                reply_msg
             )
 
         # option:2 ----- 將reply_transcript截取出食材，進資料庫做複數食材搜尋 ------ #
