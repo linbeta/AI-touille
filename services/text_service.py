@@ -11,14 +11,16 @@ from linebot import (
 )
 
 import os
+import random
 import jieba
 from daos.user_dao import UserDAO
 from linebot.models import (
-    TextSendMessage, CarouselTemplate, CarouselColumn, URITemplateAction, PostbackAction, TemplateSendMessage
+    TextSendMessage, CarouselTemplate, CarouselColumn, URITemplateAction, PostbackAction, TemplateSendMessage,
+    MessageTemplateAction
 )
 # 搜尋食譜
 
-from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_search
+from utils.search_recipe import multiple_ingredient_search
 
 
 class TextService:
@@ -87,7 +89,10 @@ class TextService:
             "我哪知道", "蛤?", "不知道", "誰知道", "不懂", "..."
         ]
         be_nice = [
-            "好喔", "好的", "了解", "XD", "是喔"
+            "好喔", "好的", "了解", "XD", "是喔", "OK", "Ok", "ok"
+        ]
+        give_feedback = [
+            "我要留言", "欸不是", "搞錯了", "抱怨"
         ]
         intent = ""
         for word in say_hi:
@@ -106,17 +111,24 @@ class TextService:
             if word in text:
                 intent = "how_to_use"
 
+        for word in give_feedback:
+            if word in text:
+                intent = "give_feedback"
+
         # 依照幾個基本的intent來產稱回覆user的句子
         if intent == "say_hi":
-            result = "你好，你可以傳食材照片或是用打字的告訴我你家冰箱裡面有些什麼食材，開啟麥克風傳語音訊息給我也可以喔！"
+            result = "你好，你可以傳食材照片或是用打字的告訴我你有些什麼食材，開啟麥克風傳語音訊息給我也可以喔！"
         elif intent == "I_don't_know":
             result = "好喔！XD"
         elif intent == "be_nice":
             result = "試試看吧！:D"
         elif intent == "how_to_use":
-            result = "你可以傳食材照片或是用打字的告訴我你家冰箱裡面有些什麼食材，我會推薦適合的食譜給你，開啟麥克風傳語音訊息也可以喔！"
+            result = "你可以傳食材照片或是用打字的告訴我你有哪些食材，我會推薦適合的食譜給你，開啟麥克風傳語音訊息也可以喔！"
+        # TODO: 可以針對Give feedback做另外的對話處理
+        elif intent == "give_feedback":
+            result = "好的，請說 😊"
         else:
-            result = "阿哈！我聽不懂喔~ 更多功能開發中，敬請期待未來的AI服務"
+            result = "收到~ 更多功能開發中，敬請期待未來的AI服務！"
 
         return result
 
@@ -146,7 +158,7 @@ class TextService:
             else:
                 # 串接資料庫->複數食材搜尋
                 dishes = multiple_ingredient_search(ingredients, len(ingredients))
-                print(dishes)
+                # print(dishes)
                 new_template = cls.make_template(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
@@ -195,7 +207,7 @@ class TextService:
                     CarouselColumn(
                         thumbnail_image_url=dishes[2][3],
                         title=dishes[2][1],
-                        text='請點選連結',
+                        text=' ',
                         actions=[
                             URITemplateAction(
                                 label='食譜連結點我',
@@ -225,18 +237,17 @@ class TextService:
                         ]
                     ),
                     CarouselColumn(
-                        thumbnail_image_url='https://memeprod.ap-south-1.linodeobjects.com/user-template-thumbnail/23d2ca5140f2ac5f1dc647aa5bf04ed5.jpg',
-                        title='以上都不是',
-                        text=' ',
+                        thumbnail_image_url='https://github.com/linbeta/AI-touille/blob/main/pic/background.jpeg?raw=true',
+                        title='小密技',
+                        text="想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
                         actions=[
                             URITemplateAction(
-                                label='哭哭',
-                                uri=dishes[3][2]  #TODO 這邊要修改~看要放哭哭網站圖?
+                                label='沒有我要的食譜',
+                                uri='https://icook.tw/'  #TODO 這邊要修改~看要放哭哭網站圖?
                             ),
-                            PostbackAction(
-                                label='喜歡',
-                                display_text='都不是痾',
-                                data='食材錯誤'
+                            MessageTemplateAction(
+                                label='給建議',
+                                text='我要留言'
                             )
                         ]
                     ),

@@ -135,12 +135,14 @@ class ImageService:
 
         if prediction.max() > 0.8:
             result_tag = class_dict.get(max_probability_item_index)
+            reply_msg = [TextSendMessage(f"圖片辨識： {result_tag}")]
             # 用result_tag來去搜尋食譜資料庫
             recipes = multiple_ingredient_search([result_tag], 1)
             new_template = TextService.make_template(recipes)
+            reply_msg.append(new_template)
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                new_template
+                reply_msg
             )
 
         # TODO: 用選單讓讓user選他拍的是什麼東西，存到update_tag

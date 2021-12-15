@@ -65,39 +65,43 @@ class LineBotController:
 
     @classmethod
     def handle_audio_message(cls, event):
-        AudioService.line_user_upload_video(event)
+        AudioService.line_user_upload_audio(event)
         return "OK"
 
     # ================== 施工區分隔線 ======================
     @classmethod
     def handle_postback_event(cls, event):
-        user_id = event.source.user_id
-        print(event.source)
-        get_data = int(event.postback.data) # 這邊的data為dish list中第一個值, 也就是recipe_id
-
-        # TODO 士恆sql語法確認:
-        '''判斷邏輯
-        if 資料庫中 此使用者喜歡食譜list中 已有紀錄:
-            則 do nothing
+        # 寫一個判斷處理給建議的postback data: 因為處理格式不同會出錯，需另外處理(暫時先用MessageTemplateAction，待處理)
+        if event.postback.data == "給建議":
+            pass
         else:
-            把此食譜寫入使用者喜歡的食譜list裡
-        '''
+            user_id = event.source.user_id
+            # print(event.source)
+            get_data = int(event.postback.data) # 這邊的data為dish list中第一個值, 也就是recipe_id
 
-        # TODO 機器人回覆文字&卡片輪播一起
-        # TODO 我喜歡 xxxx 改成 斷句
-        # TODO 卡片可以擴建到5~6張?
+            # TODO 士恆sql語法確認:
+            '''判斷邏輯
+            if 資料庫中 此使用者喜歡食譜list中 已有紀錄:
+                則 do nothing
+            else:
+                把此食譜寫入使用者喜歡的食譜list裡
+            '''
 
-        # TODO 照片or語音認錯~~~點選都不是?? quick reply or 最後一張卡片呈現 (告訴user要怎麼弄) ???????????
+            # TODO 機器人回覆文字&卡片輪播一起
+            # TODO 我喜歡 xxxx 改成 斷句
+            # TODO 卡片可以擴建到5~6張?
 
-        # TODO 存入喜用者喜好的LIST ~~~ 機器人回吐 "已收藏" ??? 顯示已收藏食譜  & -> beta
+            # TODO 照片or語音認錯~~~點選都不是?? quick reply or 最後一張卡片呈現 (告訴user要怎麼弄) ???????????
 
-        Query = (
-            f"INSERT INTO `ratatouille-ai.recipebot.test_user_recipe`(`id`, `user_id`, `recipe_id`,`my_like`) VALUES "
-            f"((select count(id)+1 from ratatouille-ai.recipebot.test_user_recipe), '{user_id}', {get_data}, 'Y'); "
-        )
-        query_job = bq_client.query(Query)
-        see_result = query_job.result()
-        print(see_result)
+            # TODO 存入喜用者喜好的LIST ~~~ 機器人回吐 "已收藏" ??? 顯示已收藏食譜  & -> beta
+
+            Query = (
+                f"INSERT INTO `ratatouille-ai.recipebot.test_user_recipe`(`id`, `user_id`, `recipe_id`,`my_like`) VALUES "
+                f"((select count(id)+1 from ratatouille-ai.recipebot.test_user_recipe), '{user_id}', {get_data}, 'Y'); "
+            )
+            query_job = bq_client.query(Query)
+            see_result = query_job.result()
+            # print(see_result)
 
 
 
