@@ -25,36 +25,35 @@ class TextService:
     line_bot_api = LineBotApi(
         channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 
-    @classmethod
-    def line_user_send_text_message(cls, event):
-        '''
-        載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
-        '''
-        # TODO：串接資料庫
-        if event.message.text == "都不是喔！":
-            cls.line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage("那請問這是什麼？XD")
-            )
-        else:
-            user_message = event.message.text
-            ingredients = cls.get_ingredients(user_message)
-            if len(ingredients) == 0:
-                # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
-                reply_message = cls.get_intent(user_message)
-                cls.line_bot_api.reply_message(
-                    event.reply_token,
-                    TextSendMessage(reply_message)
-                )
-            else:
-                # 串接資料庫->複數食材搜尋
-                # print(ingredients)
-                dishes = multiple_ingredient_search(ingredients, len(ingredients))
-                cls.line_bot_api.reply_message(
-                    event.reply_token,
-                    dishes
-                )
-
+    # @classmethod
+    # def line_user_send_text_message(cls, event):
+    #     '''
+    #     載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
+    #     '''
+    #     # TODO：串接資料庫
+    #     if event.message.text == "都不是喔！":
+    #         cls.line_bot_api.reply_message(
+    #             event.reply_token,
+    #             TextSendMessage("那請問這是什麼？XD")
+    #         )
+    #     else:
+    #         user_message = event.message.text
+    #         ingredients = cls.get_ingredients(user_message)
+    #         if len(ingredients) == 0:
+    #             # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+    #             reply_message = cls.get_intent(user_message)
+    #             cls.line_bot_api.reply_message(
+    #                 event.reply_token,
+    #                 TextSendMessage(reply_message)
+    #             )
+    #         else:
+    #             # 串接資料庫->複數食材搜尋
+    #             # print(ingredients)
+    #             dishes = multiple_ingredient_search(ingredients, len(ingredients))
+    #             cls.line_bot_api.reply_message(
+    #                 event.reply_token,
+    #                 dishes
+    #             )
 
     # 用結巴分詞抓出資料庫中有的食材的新方法
     @classmethod
@@ -73,7 +72,6 @@ class TextService:
                     result.append(word)
         # print("食材列表：", result)
         return result
-
 
     # 用這個方法來判斷user傳訊息的意圖
     @classmethod
@@ -123,120 +121,126 @@ class TextService:
         return result
 
 # ================== 施工區分隔線 ======================
-
 # TODO:開發中的程式碼=>用卡片的方式呈現食譜，可直接點喜歡收藏食譜，postback功能待研究
-#     @classmethod
-#     def line_user_send_text_message(cls, event):
-#         '''
-#         載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
-#         '''
-#         # TODO：串接資料庫
-#         if event.message.text == "都不是喔！":
-#             cls.line_bot_api.reply_message(
-#                 event.reply_token,
-#                 TextSendMessage("那請問這是什麼？XD")
-#             )
-#         else:
-#             user_message = event.message.text
-#             ingredients = cls.get_ingredients(user_message)
-#             if len(ingredients) == 0:
-#                 # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
-#                 reply_message = cls.get_intent(user_message)
-#                 cls.line_bot_api.reply_message(
-#                     event.reply_token,
-#                     TextSendMessage(reply_message)
-#                 )
-#             else:
-#                 # 串接資料庫->複數食材搜尋
-#                 # print(ingredients)
-#                 dishes = multiple_ingredient_search(ingredients, len(ingredients))
-#                 new_template = cls.make_template(dishes)
-#                 cls.line_bot_api.reply_message(
-#                     event.reply_token,
-#                     new_template
-#                 )
+    @classmethod
+    def line_user_send_text_message(cls, event):
+        '''
+        載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
+        '''
+        # TODO：串接資料庫
+        if event.message.text == "都不是喔！":
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage("那請問這是什麼？XD")
+            )
+        else:
+            user_message = event.message.text
+            ingredients = cls.get_ingredients(user_message)
+            if len(ingredients) == 0:
+                # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+                reply_message = cls.get_intent(user_message)
+                cls.line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(reply_message)
+                )
+            else:
+                # 串接資料庫->複數食材搜尋
+                dishes = multiple_ingredient_search(ingredients, len(ingredients))
+                print(dishes)
+                new_template = cls.make_template(dishes)
+                cls.line_bot_api.reply_message(
+                    event.reply_token,
+                    new_template
+                )
 
-
-    # 注意: 所有網址都只吃https
     @classmethod
     def make_template(cls, dishes):
-        test_template_message = TemplateSendMessage(
+        recipe_template_message = TemplateSendMessage(
             alt_text='Carousel template',
             template=CarouselTemplate(
                 columns=[
+                    # todo 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
                     CarouselColumn(
-                        # todo: 爬蟲抓圖片網址後取值~~~~~~~~
-                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
-                        title=dishes[0][:7],  # todo: 取值規則待寫~~~~~~~~~~~~~~~~
-                        text='請點選連結',
+                        thumbnail_image_url=dishes[0][3],
+                        title=dishes[0][1],
+                        text=' ',
                         actions=[
                             URITemplateAction(
-                                label='連結點這邊',
-                                uri='https://www.google.com'  # todo: 可練習用正規表達去切 抓取https網址~~~~~~~~
+                                label='食譜連結點我',
+                                uri=dishes[0][2]
                             ),
                             PostbackAction(
                                 label='喜歡',
-                                # label=dishes[2],
-                                display_text='dish~',
-                                data='待處理'   # todo: 使用者按讚之後, 取data紀錄喜好
+                                display_text='我喜歡'+dishes[0][1],
+                                data=dishes[0][0]
                             )
                         ]
                     ),
                     CarouselColumn(
-                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
-                        # title='標題1',
-                        title=dishes[1][:7],
-                        text='請點選連結',
+                        thumbnail_image_url=dishes[1][3],
+                        title=dishes[1][1],
+                        text=' ',
                         actions=[
                             URITemplateAction(
-                                label='連結點這邊',
-                                uri='https://www.google.com'
+                                label='食譜連結點我',
+                                uri=dishes[1][2]
                             ),
                             PostbackAction(
                                 label='喜歡',
-                                # label=dishes[2],
-                                display_text='dish~',
-                                data='待處理'
+                                display_text='我喜歡'+dishes[1][1],
+                                data=dishes[1][0]
                             )
                         ]
                     ),
                     CarouselColumn(
-                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
-                        # title='標題1',
-                        title=dishes[2][:7],
+                        thumbnail_image_url=dishes[2][3],
+                        title=dishes[2][1],
                         text='請點選連結',
                         actions=[
                             URITemplateAction(
-                                label='連結點這邊',
-                                uri='https://www.google.com'
+                                label='食譜連結點我',
+                                uri=dishes[2][2]
                             ),
                             PostbackAction(
                                 label='喜歡',
-                                # label=dishes[2],
-                                display_text='dish~',
-                                data='待處理'
+                                display_text='我喜歡'+dishes[2][1],
+                                data=dishes[2][0]
                             )
                         ]
                     ),
                     CarouselColumn(
-                        thumbnail_image_url='https://www.kikkoman.com.tw/tmp/image/20131209/F2213D7E-6BB2-4D47-A78D-8CC939BC902B.jpg',
-                        # title='標題1',
-                        title=dishes[3][:7],
-                        text='請點選連結',
+                        thumbnail_image_url=dishes[3][3],
+                        title=dishes[3][1],
+                        text=' ',
                         actions=[
                             URITemplateAction(
                                 label='連結點這邊',
-                                uri='https://www.google.com'
+                                uri=dishes[3][2]
                             ),
                             PostbackAction(
                                 label='喜歡',
-                                # label=dishes[2],
-                                display_text='dish~',
-                                data='待處理'
+                                display_text='我喜歡'+dishes[3][1],
+                                data=dishes[3][0]
+                            )
+                        ]
+                    ),
+                    CarouselColumn(
+                        thumbnail_image_url='https://memeprod.ap-south-1.linodeobjects.com/user-template-thumbnail/23d2ca5140f2ac5f1dc647aa5bf04ed5.jpg',
+                        title='以上都不是',
+                        text=' ',
+                        actions=[
+                            URITemplateAction(
+                                label='哭哭',
+                                uri=dishes[3][2]  #TODO 這邊要修改~看要放哭哭網站圖?
+                            ),
+                            PostbackAction(
+                                label='喜歡',
+                                display_text='都不是痾',
+                                data='食材錯誤'
                             )
                         ]
                     ),
                 ]
             )
         )
-        return test_template_message
+        return recipe_template_message

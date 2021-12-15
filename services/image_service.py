@@ -25,6 +25,7 @@ import numpy as np
 import time
 
 # 拿user資料
+from services.text_service import TextService
 from services.user_service import UserService
 
 import os
@@ -108,26 +109,40 @@ class ImageService:
         max_probability_item_index = np.argmax(prediction[0])
         # 將預測值印出來
         # print(max_probability_item_index)
-        result_tag = "00"
+        # result_tag = "00"
         # print(prediction.max())
+
+
+        # todo ~~~~~~~~~~~~~~~~~開發中 以下為原版~~~~~~~~~~~~~~~~~~~~~~~
+        # if prediction.max() > 0.8:
+        #     result_message_array = detect_json_array_to_new_message_array(
+        #         "line_message_json/" + class_dict.get(max_probability_item_index) + ".json")
+        #     result_tag = class_dict.get(max_probability_item_index)
+        #     # print("result_tag: ", result_tag)
+        #     # 用result_tag來去搜尋食譜資料庫
+        #     recipes = multiple_ingredient_search([result_tag], 1)
+        #     # 搜尋資料庫得到食譜連結，並把它轉成可以回傳給user的文字訊息格式存成push_recipe
+        #     # print(recipes)
+        #
+        #     # 把拿到的食譜資訊接到result_message_array
+        #     result_message_array += recipes
+        #     # print(result_message_array)
+        #     # 把食譜網址回傳給user
+        #     cls.line_bot_api.reply_message(
+        #         event.reply_token,
+        #         result_message_array
+        #     )
+
         if prediction.max() > 0.8:
-            result_message_array = detect_json_array_to_new_message_array(
-                "line_message_json/"+class_dict.get(max_probability_item_index)+".json")
             result_tag = class_dict.get(max_probability_item_index)
-            # print("result_tag: ", result_tag)
             # 用result_tag來去搜尋食譜資料庫
             recipes = multiple_ingredient_search([result_tag], 1)
-            # 搜尋資料庫得到食譜連結，並把它轉成可以回傳給user的文字訊息格式存成push_recipe
-            # print(recipes)
-
-            # 把拿到的食譜資訊接到result_message_array
-            result_message_array += recipes
-            # print(result_message_array)
-            # 把食譜網址回傳給user
+            new_template = TextService.make_template(recipes)
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                result_message_array
+                new_template
             )
+
         # TODO: 用選單讓讓user選他拍的是什麼東西，存到update_tag
         elif prediction.max() > 0.3:
             # 取得預測前3大的labels
