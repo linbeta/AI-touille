@@ -127,10 +127,21 @@ def multiple_ingredient_search(ingredient_list, ing_num):
         # 如果查詢的食材找不到食譜，訊息告知食譜資料庫查無資料，敬請期待更新
         reply_message.append(TextSendMessage("食譜資料庫查無資料，敬請期待未來的版本更新！"))
 
-# 測試用的code
-# result_tag = "豬肉"
-# print(use_result_tag_to_query(result_tag))
 
+def get_all_material_names():
+    QUERY = (
+        f"SELECT m.name FROM `ratatouille-ai.recipebot.material` as m"
+    )
+    query_job = client.query(QUERY)
+    rows = query_job.result()
+    # for row in rows:
+    #     print(row[0])
+    with open("text_files/materials.txt", "w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(row[0] + "\n")
+
+# 刷新text_files/materials.txt檔案
+# get_all_material_names()
 
 # 測試用的code
 
