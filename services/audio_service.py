@@ -118,4 +118,3 @@ class AudioService:
             )
 
         # option:2 ----- 將reply_transcript截取出食材，進資料庫做複數食材搜尋 ------ #
-

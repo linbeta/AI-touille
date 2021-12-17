@@ -221,4 +221,3 @@ class ImageService:
         os.remove(temp_file_path)
 
         # 回覆消息
-
