@@ -43,7 +43,7 @@ class TextService:
             user_id = event.source.user_id
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(f"LIFF app link test: https://ai-touille-i3nmjvjeja-de.a.run.app/{user_id}")
+                TextSendMessage(f"LIFF app link test: https://ai-touille-i3nmjvjeja-de.a.run.app/my_cookbook/{user_id}")
             )
         else:
             user_message = event.message.text
