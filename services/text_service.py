@@ -27,35 +27,43 @@ class TextService:
     line_bot_api = LineBotApi(
         channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 
-    # @classmethod
-    # def line_user_send_text_message(cls, event):
-    #     '''
-    #     載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
-    #     '''
-    #     # TODO：串接資料庫
-    #     if event.message.text == "都不是喔！":
-    #         cls.line_bot_api.reply_message(
-    #             event.reply_token,
-    #             TextSendMessage("那請問這是什麼？XD")
-    #         )
-    #     else:
-    #         user_message = event.message.text
-    #         ingredients = cls.get_ingredients(user_message)
-    #         if len(ingredients) == 0:
-    #             # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
-    #             reply_message = cls.get_intent(user_message)
-    #             cls.line_bot_api.reply_message(
-    #                 event.reply_token,
-    #                 TextSendMessage(reply_message)
-    #             )
-    #         else:
-    #             # 串接資料庫->複數食材搜尋
-    #             # print(ingredients)
-    #             dishes = multiple_ingredient_search(ingredients, len(ingredients))
-    #             cls.line_bot_api.reply_message(
-    #                 event.reply_token,
-    #                 dishes
-    #             )
+    @classmethod
+    def line_user_send_text_message(cls, event):
+        '''
+        載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
+        '''
+
+        if event.message.text == "都不是喔！":
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage("那請問這是什麼？XD")
+            )
+# TODO: 施工區：elif裡面先用文字來顯示收藏的食譜,用user_id來搜尋
+        elif event.message.text == "收藏的食譜":
+            user_id = event.source.user_id
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(f"LIFF app link test: https://ai-touille-i3nmjvjeja-de.a.run.app/{user_id}")
+            )
+        else:
+            user_message = event.message.text
+            ingredients = cls.get_ingredients(user_message)
+            if len(ingredients) == 0:
+                # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+                reply_message = cls.get_intent(user_message)
+                cls.line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(reply_message)
+                )
+            else:
+                # 串接資料庫->複數食材搜尋
+                dishes = multiple_ingredient_search(ingredients, len(ingredients))
+                # print(dishes)
+                new_template = cls.make_template(dishes)
+                cls.line_bot_api.reply_message(
+                    event.reply_token,
+                    new_template
+                )
 
     # 用結巴分詞抓出資料庫中有的食材的新方法
     @classmethod
@@ -132,38 +140,7 @@ class TextService:
 
         return result
 
-# ================== 施工區分隔線 ======================
-# TODO:開發中的程式碼=>用卡片的方式呈現食譜，可直接點喜歡收藏食譜，postback功能待研究
-    @classmethod
-    def line_user_send_text_message(cls, event):
-        '''
-        載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
-        '''
-        # TODO：串接資料庫
-        if event.message.text == "都不是喔！":
-            cls.line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage("那請問這是什麼？XD")
-            )
-        else:
-            user_message = event.message.text
-            ingredients = cls.get_ingredients(user_message)
-            if len(ingredients) == 0:
-                # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
-                reply_message = cls.get_intent(user_message)
-                cls.line_bot_api.reply_message(
-                    event.reply_token,
-                    TextSendMessage(reply_message)
-                )
-            else:
-                # 串接資料庫->複數食材搜尋
-                dishes = multiple_ingredient_search(ingredients, len(ingredients))
-                # print(dishes)
-                new_template = cls.make_template(dishes)
-                cls.line_bot_api.reply_message(
-                    event.reply_token,
-                    new_template
-                )
+
 
     @classmethod
     def make_template(cls, dishes):

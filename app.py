@@ -1,5 +1,3 @@
-####安裝套件  pip3 install -r requirements.txt  #######
-
 ## ========== 設定line_bot  ==========
 import os
 channel_access_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
@@ -12,7 +10,7 @@ curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = os.path.split(curPath)[0]
 sys.path.append(rootPath)
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 
 from flask_cors import CORS
 
@@ -26,7 +24,8 @@ from linebot.exceptions import (
 
 
 from controllers.line_bot_controller import LineBotController
-
+from services.user_service import UserService
+from utils.search_recipe import get_cookbook
 from controllers.user_controller import UserController
 
 app = Flask(__name__)
@@ -70,12 +69,23 @@ app = Flask(__name__)
 app.debug = True
 run_with_ngrok(app)
 
-
+'''
+網頁
+'''
 @app.route('/test')
 def hello_world():
     bot_event_logger.info("test")
     return 'Hello, World!'
 
+# 用line_user_id來搜尋資料庫裡面儲存的食譜
+@app.route('/my_cookbook/<user_id>', methods=['GET'])
+def open_my_cookbook(user_id):
+    user_object = UserService.get_user(user_id)
+    user_nickname = user_object.line_user_nickname
+    recipe_dict = get_cookbook(user_id)
+    # user_id
+    # render_template('my_cookbook.html')
+    return render_template('my_cookbook.html', search_result=recipe_dict, nickname=user_nickname)
 
 '''
 轉發功能列表
@@ -135,10 +145,10 @@ def handle_postback_event(event):
     return LineBotController.handle_postback_event(event)
 
 
-@app.route("/user", methods=['GET'])
-def get_user():
-    result = UserController.get_user(request)
-    return result
+# @app.route("/user", methods=['GET'])
+# def get_user():
+#     result = UserController.get_user(request)
+#     return result
 
 
 if __name__ == "__main__":

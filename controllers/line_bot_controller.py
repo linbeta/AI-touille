@@ -76,8 +76,8 @@ class LineBotController:
             pass
         else:
             user_id = event.source.user_id
-            # print(event.source)
-            get_data = int(event.postback.data) # 這邊的data為dish list中第一個值, 也就是recipe_id
+            # print(user_id)
+            recipe_id_data = int(event.postback.data) # 這邊的recipe_id_data為dish list中第一個值, 也就是recipe_id
 
             # TODO 士恆sql語法確認:
             '''判斷邏輯
@@ -95,13 +95,16 @@ class LineBotController:
 
             # TODO 存入喜用者喜好的LIST ~~~ 機器人回吐 "已收藏" ??? 顯示已收藏食譜  & -> beta
 
+            # 使用者點喜歡後，將該食譜id存入user_recipe資料庫中
             Query = (
-                f"INSERT INTO `ratatouille-ai.recipebot.test_user_recipe`(`id`, `user_id`, `recipe_id`,`my_like`) VALUES "
-                f"((select count(id)+1 from ratatouille-ai.recipebot.test_user_recipe), '{user_id}', {get_data}, 'Y'); "
+                f"INSERT INTO `ratatouille-ai.recipebot.user_recipe`"
+                f"(`id`, `line_user_id`, `recipe_id`, `my_like`, `created_time`, `updated_time`) VALUES "
+                f"((select count(id)+1 from ratatouille-ai.recipebot.user_recipe), "
+                f"'{user_id}', {recipe_id_data}, 'Y', (SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP)); "
             )
             query_job = bq_client.query(Query)
-            see_result = query_job.result()
-            # print(see_result)
+            # see_result = query_job.result()
+            # print("success")
 
 
 
