@@ -60,6 +60,7 @@ class ImageService:
                 fd.write(chunk)
 
         user_object = UserService.get_user(event.source.user_id)
+        # print(user_object)
         user_nickname = user_object.line_user_nickname
 
         # 上傳至照片暫存檔bucket: temp_food_image_mvp

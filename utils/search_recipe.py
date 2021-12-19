@@ -128,6 +128,22 @@ def multiple_ingredient_search(ingredient_list, ing_num):
         reply_message.append(TextSendMessage("食譜資料庫查無資料，敬請期待未來的版本更新！"))
 
 
+# 查看我收藏的食譜
+def get_cookbook(line_user_id):
+    QUERY = (
+            f"SELECT distinct r.id, r.recipe_name, r.URL "
+            f"FROM `ratatouille-ai.recipebot.recipe` as r, `ratatouille-ai.recipebot.user_recipe` as ur "
+            f"WHERE ur.line_user_id = '{line_user_id}' and r.id = ur.recipe_id;"
+    )
+    query_job = client.query(QUERY)
+    rows = query_job.result()
+    my_favorites = {}
+    for i, row in enumerate(rows):
+        my_favorites[i] = {'recipe_id': row[0], 'recipe_name': row[1], 'recipe_url': row[2]}
+    # print(my_favorites)
+    return my_favorites
+
+
 def get_all_material_names():
     QUERY = (
         f"SELECT m.name FROM `ratatouille-ai.recipebot.material` as m"
