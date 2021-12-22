@@ -130,11 +130,11 @@ def multiple_ingredient_search(ingredient_list, ing_num, line_user_id):
     if len(top_match_recipe_list) > 3:
         shuffle(top_match_recipe_list)
         # 如果超過4個，只取洗牌後的前4個出來
-        if len(top_match_recipe_list) > 4:
-            top_match_recipe_list = top_match_recipe_list[:4]
+        if len(top_match_recipe_list) > 9: #Charles 20211222
+            top_match_recipe_list = top_match_recipe_list[:9]
         return top_match_recipe_list
 
-    elif len(top_match_recipe_list) < 4 and len(match_cnt_2_recipe_list) > 0:
+    elif len(top_match_recipe_list) < 9 and len(match_cnt_2_recipe_list) > 0:
         shuffle(match_cnt_2_recipe_list)
         return match_cnt_2_recipe_list
 
