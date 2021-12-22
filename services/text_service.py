@@ -38,7 +38,7 @@ class TextService:
                 event.reply_token,
                 TextSendMessage("那請問這是什麼？XD")
             )
-# TODO: 施工區：elif裡面先用文字來顯示收藏的食譜,用user_id來搜尋
+        # TODO: 施工區：elif裡面先用文字來顯示收藏的食譜,用user_id來搜尋
         elif event.message.text == "收藏的食譜":
             user_id = event.source.user_id
             cls.line_bot_api.reply_message(
@@ -58,12 +58,14 @@ class TextService:
             else:
                 # 串接資料庫->複數食材搜尋
                 dishes = multiple_ingredient_search(ingredients, len(ingredients), event.source.user_id)
-                # print(dishes)
+
+                print("the dish not None")
                 new_template = cls.make_template(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
                     new_template
                 )
+
 
     # 用結巴分詞抓出資料庫中有的食材的新方法
     @classmethod
@@ -140,109 +142,157 @@ class TextService:
 
         return result
 
-
-
     @classmethod
     def make_template(cls, dishes):
-        print ("dishes: "+ str(dishes))
+        print("dishes: " + str(dishes))
 
         # 2021/12/21 Charles
         for i in dishes:
-            if i[4]=="Y":
-                i[4]="取消收藏"
+            if i[4] == "Y":
+                i[4] = "取消收藏"
                 # i[1]="刪除最愛: "+str(i[1])
-                i[0]="D," + str(i[0])
+                i[0] = "D," + str(i[0])
             else:
-                i[4] ="收藏食譜"
+                i[4] = "收藏食譜"
                 # i[1] = "新增最愛: " + str(i[1])
                 i[0] = "I," + str(i[0])
-        # 2021/12/21 Charles
 
-        recipe_template_message = TemplateSendMessage(
-            alt_text='Carousel template',
-            template=CarouselTemplate(
-                columns=[
-                    # todo 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
-                    CarouselColumn(
-                        thumbnail_image_url=dishes[0][3],
-                        title=dishes[0][1],
-                        text=' ',
-                        actions=[
-                            URITemplateAction(
-                                label='食譜連結點我',
-                                uri=dishes[0][2]
-                            ),
-                            PostbackAction(
-                                label= dishes[0][4],
-                                display_text=dishes[0][1],
-                                data=dishes[0][0]
-                            )
-                        ]
+        cs=[]
+        print(len(dishes))
+        for j in range(len(dishes)):
+            cc = CarouselColumn(
+                thumbnail_image_url=dishes[j][3],
+                title=dishes[j][1],
+                text=' ',
+                actions=[
+                    URITemplateAction(
+                        label='食譜連結點我',
+                        uri=dishes[j][2]
                     ),
-                    CarouselColumn(
-                        thumbnail_image_url=dishes[1][3],
-                        title=dishes[1][1],
-                        text=' ',
-                        actions=[
-                            URITemplateAction(
-                                label='食譜連結點我',
-                                uri=dishes[1][2]
-                            ),
-                            PostbackAction(
-                                label=dishes[1][4],
-                                display_text=dishes[1][1],
-                                data=dishes[1][0]
-                            )
-                        ]
-                    ),
-                    CarouselColumn(
-                        thumbnail_image_url=dishes[2][3],
-                        title=dishes[2][1],
-                        text=' ',
-                        actions=[
-                            URITemplateAction(
-                                label='食譜連結點我',
-                                uri=dishes[2][2]
-                            ),
-                            PostbackAction(
-                                label=dishes[2][4],
-                                display_text=dishes[2][1],
-                                data=dishes[2][0]
-                            )
-                        ]
-                    ),
-                    CarouselColumn(
-                        thumbnail_image_url=dishes[3][3],
-                        title=dishes[3][1],
-                        text=' ',
-                        actions=[
-                            URITemplateAction(
-                                label='連結點這邊',
-                                uri=dishes[3][2]
-                            ),
-                            PostbackAction(
-                                label=dishes[3][4],
-                                display_text=dishes[3][1],
-                                data=dishes[3][0]
-                            )
-                        ]
-                    ),
-                    CarouselColumn(
-                        thumbnail_image_url='https://github.com/linbeta/AI-touille/blob/main/pic/background.jpeg?raw=true',
-                        title='小密技',
-                        text="想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
-                        actions=[
-                            URITemplateAction(
-                                label='沒有我要的食譜',
-                                uri='https://icook.tw/'  #TODO 這邊要修改~看要放哭哭網站圖?
-                            ),
-                            MessageTemplateAction(
-                                label='給建議',
-                                text='我要留言'
-                            )
-                        ]
-                    ),
+                    PostbackAction(
+                        label=dishes[j][4],
+                        display_text=dishes[j][1],
+                        data=dishes[j][0]
+                    )
                 ]
             )
+            cs.append(cc)
+        # print(cs)
+        print(str(cs))
+        TipCard = CarouselColumn(
+            thumbnail_image_url='https://github.com/linbeta/AI-touille/blob/main/pic/background.jpeg?raw=true',
+            title='小密技',
+            text="想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
+            actions=[
+                URITemplateAction(
+                    label='沒有我要的食譜',
+                    uri='https://icook.tw/'  #TODO 這邊要修改~看要放哭哭網站圖?
+                ),
+                MessageTemplateAction(
+                    label='給建議',
+                    text='我要留言'
+                )
+            ]
         )
+        cs.append(TipCard)
+        print("Finished CS")
+        # todo 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
+        try:
+            recipe_template_message = TemplateSendMessage(
+                alt_text='Carousel template',
+                template=CarouselTemplate(
+                    columns=cs
+                )
+            )
+        except Exception as e:
+            print(e)
+
+        # 2021/12/21 Charles
+        # recipe_template_message = TemplateSendMessage(
+        #     alt_text='Carousel template',
+        #     template=CarouselTemplate(
+        #         columns=[
+        #             # todo 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
+        #             CarouselColumn(
+        #                 thumbnail_image_url=dishes[0][3],
+        #                 title=dishes[0][1],
+        #                 text=' ',
+        #                 actions=[
+        #                     URITemplateAction(
+        #                         label='食譜連結點我',
+        #                         uri=dishes[0][2]
+        #                     ),
+        #                     PostbackAction(
+        #                         label= dishes[0][4],
+        #                         display_text=dishes[0][1],
+        #                         data=dishes[0][0]
+        #                     )
+        #                 ]
+        #             ),
+        #             CarouselColumn(
+        #                 thumbnail_image_url=dishes[1][3],
+        #                 title=dishes[1][1],
+        #                 text=' ',
+        #                 actions=[
+        #                     URITemplateAction(
+        #                         label='食譜連結點我',
+        #                         uri=dishes[1][2]
+        #                     ),
+        #                     PostbackAction(
+        #                         label=dishes[1][4],
+        #                         display_text=dishes[1][1],
+        #                         data=dishes[1][0]
+        #                     )
+        #                 ]
+        #             ),
+        #             CarouselColumn(
+        #                 thumbnail_image_url=dishes[2][3],
+        #                 title=dishes[2][1],
+        #                 text=' ',
+        #                 actions=[
+        #                     URITemplateAction(
+        #                         label='食譜連結點我',
+        #                         uri=dishes[2][2]
+        #                     ),
+        #                     PostbackAction(
+        #                         label=dishes[2][4],
+        #                         display_text=dishes[2][1],
+        #                         data=dishes[2][0]
+        #                     )
+        #                 ]
+        #             ),
+        #             CarouselColumn(
+        #                 thumbnail_image_url=dishes[3][3],
+        #                 title=dishes[3][1],
+        #                 text=' ',
+        #                 actions=[
+        #                     URITemplateAction(
+        #                         label='連結點這邊',
+        #                         uri=dishes[3][2]
+        #                     ),
+        #                     PostbackAction(
+        #                         label=dishes[3][4],
+        #                         display_text=dishes[3][1],
+        #                         data=dishes[3][0]
+        #                     )
+        #                 ]
+        #             ),
+        #             CarouselColumn(
+        #                 thumbnail_image_url='https://github.com/linbeta/AI-touille/blob/main/pic/background.jpeg?raw=true',
+        #                 title='小密技',
+        #                 text="想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
+        #                 actions=[
+        #                     URITemplateAction(
+        #                         label='沒有我要的食譜',
+        #                         uri='https://icook.tw/'  #TODO 這邊要修改~看要放哭哭網站圖?
+        #                     ),
+        #                     MessageTemplateAction(
+        #                         label='給建議',
+        #                         text='我要留言'
+        #                     )
+        #                 ]
+        #             ),
+        #         ]
+        #     )
+        # )
         return recipe_template_message
