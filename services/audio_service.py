@@ -1,3 +1,5 @@
+# 修改紀錄：
+# 2021/12/21 Charles
 '''
 用戶上傳音訊檔時，將音訊檔從Line取回，轉成文字訊息，
 並將音訊檔放入CloudStorage
@@ -109,7 +111,8 @@ class AudioService:
             #     reply_msg
             # )
             # TODO: 串接資料庫->複數食材搜尋
-            dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio))
+            # 2021/12/21 Charles 新增user_id參數
+            dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio), event.source.user_id)
             new_template = TextService.make_template(dishes)
             reply_msg.append(new_template)
             cls.line_bot_api.reply_message(

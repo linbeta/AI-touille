@@ -1,3 +1,6 @@
+# 修改紀錄：
+# 2021/12/21 Charles
+
 '''
 用戶上傳照片時，將照片從Line取回，放入CloudStorage
 '''
@@ -138,7 +141,8 @@ class ImageService:
             result_tag = class_dict.get(max_probability_item_index)
             reply_msg = [TextSendMessage(f"圖片辨識： {result_tag}")]
             # 用result_tag來去搜尋食譜資料庫
-            recipes = multiple_ingredient_search([result_tag], 1)
+            # 2021/12/21 Charles 新增user_id參數
+            recipes = multiple_ingredient_search([result_tag], 1, event.source.user_id)
             new_template = TextService.make_template(recipes)
             reply_msg.append(new_template)
             cls.line_bot_api.reply_message(

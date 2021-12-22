@@ -2,11 +2,16 @@
 當用戶關注時，必須取用照片，並存放至指定bucket位置，而後生成User物件，存回db
 當用戶取消關注時，
     從資料庫提取用戶數據，修改用戶的封鎖狀態後，存回資料庫
+
+修改紀錄：
+# 2021/12/21 Charles
+
 '''
 
 from linebot import (
     LineBotApi, WebhookHandler
 )
+from linebot.models import TextSendMessage
 import os
 
 # 載入Follow事件
@@ -69,43 +74,72 @@ class LineBotController:
         return "OK"
 
     # ================== 施工區分隔線 ======================
+    # 2021/12/21 Charles
     @classmethod
     def handle_postback_event(cls, event):
         # 寫一個判斷處理給建議的postback data: 因為處理格式不同會出錯，需另外處理(暫時先用MessageTemplateAction，待處理)
+        # print(event.postback.data[0])
         if event.postback.data == "給建議":
             pass
-        else:
+        elif str(event.postback.data)[0]=="I": #傳入欲新增的食譜id # 2021/12/21 Charles
             user_id = event.source.user_id
-            # print(user_id)
-            recipe_id_data = int(event.postback.data) # 這邊的recipe_id_data為dish list中第一個值, 也就是recipe_id
-
-            # TODO 士恆sql語法確認:
+            print("Saving " + user_id + "'s favorite" )
+            recipe_id_data = int(str(event.postback.data)[2:])
+            # recipe_id_data = int(event.postback.data) # 這邊的recipe_id_data為dish list中第一個值, 也就是recipe_id
             '''判斷邏輯
             if 資料庫中 此使用者喜歡食譜list中 已有紀錄:
                 則 do nothing
             else:
                 把此食譜寫入使用者喜歡的食譜list裡
             '''
+            Query = (
+                f"Select id from `ratatouille-ai.recipebot.user_recipe` "
+                f"where recipe_id = {recipe_id_data} and line_user_id = '{user_id}';"
+            )
+            print(Query)
+            query_job = bq_client.query(Query)  # API request
+            rows = query_job.result()  # Waits for query to finish
 
+            num_results = rows.total_rows
+            print("num_results: "+str(num_results))
+
+            if num_results == 0:
+                # 使用者點喜歡後，將該食譜id存入user_recipe資料庫中
+                Query = (
+                    f"INSERT INTO `ratatouille-ai.recipebot.user_recipe`"
+                    f"(`id`, `line_user_id`, `recipe_id`, `my_like`, `created_time`, `updated_time`) VALUES "
+                    f"((select count(id)+1 from ratatouille-ai.recipebot.user_recipe), "
+                    f"'{user_id}', {recipe_id_data}, 'Y', (SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP)); "
+                )
+                query_job = bq_client.query(Query)
+                # see_result = query_job.result()
+                print("最愛儲存成功")
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage("已儲存")
+                )
+            else:
+                print("Favorite already saved.")
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage("已儲存")
+                )
             # TODO 機器人回覆文字&卡片輪播一起
             # TODO 我喜歡 xxxx 改成 斷句
             # TODO 卡片可以擴建到5~6張?
-
             # TODO 照片or語音認錯~~~點選都不是?? quick reply or 最後一張卡片呈現 (告訴user要怎麼弄) ???????????
-
             # TODO 存入喜用者喜好的LIST ~~~ 機器人回吐 "已收藏" ??? 顯示已收藏食譜  & -> beta
-
-            # 使用者點喜歡後，將該食譜id存入user_recipe資料庫中
+        elif str(event.postback.data)[0]=="D": #傳入欲刪除的食譜id # 2021/12/21 Charles
+            user_id = event.source.user_id
+            print("Removing " + user_id + "'s favorite" )
+            recipe_id_data = int(str(event.postback.data)[2:])
             Query = (
-                f"INSERT INTO `ratatouille-ai.recipebot.user_recipe`"
-                f"(`id`, `line_user_id`, `recipe_id`, `my_like`, `created_time`, `updated_time`) VALUES "
-                f"((select count(id)+1 from ratatouille-ai.recipebot.user_recipe), "
-                f"'{user_id}', {recipe_id_data}, 'Y', (SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP)); "
+                f"Delete `ratatouille-ai.recipebot.user_recipe` "
+                f"where recipe_id = {recipe_id_data} and line_user_id = '{user_id}';"
             )
-            query_job = bq_client.query(Query)
-            # see_result = query_job.result()
-            # print("success")
-
-
-
-
+            print(Query)
+            query_job = bq_client.query(Query)  # API request
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage("已取消")
+            )

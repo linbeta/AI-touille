@@ -57,7 +57,7 @@ class TextService:
                 )
             else:
                 # 串接資料庫->複數食材搜尋
-                dishes = multiple_ingredient_search(ingredients, len(ingredients))
+                dishes = multiple_ingredient_search(ingredients, len(ingredients), event.source.user_id)
                 # print(dishes)
                 new_template = cls.make_template(dishes)
                 cls.line_bot_api.reply_message(
@@ -144,6 +144,20 @@ class TextService:
 
     @classmethod
     def make_template(cls, dishes):
+        print ("dishes: "+ str(dishes))
+
+        # 2021/12/21 Charles
+        for i in dishes:
+            if i[4]=="Y":
+                i[4]="取消收藏"
+                # i[1]="刪除最愛: "+str(i[1])
+                i[0]="D," + str(i[0])
+            else:
+                i[4] ="收藏食譜"
+                # i[1] = "新增最愛: " + str(i[1])
+                i[0] = "I," + str(i[0])
+        # 2021/12/21 Charles
+
         recipe_template_message = TemplateSendMessage(
             alt_text='Carousel template',
             template=CarouselTemplate(
@@ -159,8 +173,8 @@ class TextService:
                                 uri=dishes[0][2]
                             ),
                             PostbackAction(
-                                label='喜歡',
-                                display_text='我喜歡'+dishes[0][1],
+                                label= dishes[0][4],
+                                display_text=dishes[0][1],
                                 data=dishes[0][0]
                             )
                         ]
@@ -175,8 +189,8 @@ class TextService:
                                 uri=dishes[1][2]
                             ),
                             PostbackAction(
-                                label='喜歡',
-                                display_text='我喜歡'+dishes[1][1],
+                                label=dishes[1][4],
+                                display_text=dishes[1][1],
                                 data=dishes[1][0]
                             )
                         ]
@@ -191,8 +205,8 @@ class TextService:
                                 uri=dishes[2][2]
                             ),
                             PostbackAction(
-                                label='喜歡',
-                                display_text='我喜歡'+dishes[2][1],
+                                label=dishes[2][4],
+                                display_text=dishes[2][1],
                                 data=dishes[2][0]
                             )
                         ]
@@ -207,8 +221,8 @@ class TextService:
                                 uri=dishes[3][2]
                             ),
                             PostbackAction(
-                                label='喜歡',
-                                display_text='我喜歡'+dishes[3][1],
+                                label=dishes[3][4],
+                                display_text=dishes[3][1],
                                 data=dishes[3][0]
                             )
                         ]

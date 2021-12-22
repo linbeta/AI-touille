@@ -1,3 +1,6 @@
+# 修改紀錄：
+# 2021/12/21 Charles
+
 from random import shuffle
 import os
 from google.cloud import bigquery as bq
@@ -69,8 +72,24 @@ def multiple_ingredient_query(ingredient_list, ing_num):
 
 # todo: ================== 施工完成80% ======================
 
-def multiple_ingredient_search(ingredient_list, ing_num):
+def multiple_ingredient_search(ingredient_list, ing_num, line_user_id):
     ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
+    # QUERY = (
+    #     f"SELECT distinct b.id, b.recipe_name, b.URL, {ing_num} as user_material_cnt, "
+    #     f"(select count(x.id) from `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y,"
+    #     f"`ratatouille-ai.recipebot.recipe` z "
+    #     f"where x.material_id=y.id and x.recipe_id=z.id  and trim(y.name) in ({ingredient_list_str}) "
+    #     f"and z.id=b.id) as match_cnt, "
+    #     f"(select count(material_id) from `ratatouille-ai.recipebot.recipe_material` "
+    #     f"where recipe_id = b.id) as recipe_material_cnt, "
+    #     f"(SELECT images FROM `ratatouille-ai.recipebot.recipe` where a.recipe_id = id ) as recipe_image_url, "
+    #     f"FROM `ratatouille-ai.recipebot.recipe_material` as a,`ratatouille-ai.recipebot.recipe` as b, "
+    #     f"ratatouille-ai.recipebot.material as c "
+    #     f"WHERE a.recipe_id = b.id and a.material_id = c.id and trim(c.name) in ({ingredient_list_str}) "
+    #     f"order by match_cnt desc, recipe_material_cnt asc,b.recipe_name LIMIT 20;"
+    # )
+
+    # 2021/12/21 Charles
     QUERY = (
         f"SELECT distinct b.id, b.recipe_name, b.URL, {ing_num} as user_material_cnt, "
         f"(select count(x.id) from `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y,"
@@ -79,14 +98,15 @@ def multiple_ingredient_search(ingredient_list, ing_num):
         f"and z.id=b.id) as match_cnt, "
         f"(select count(material_id) from `ratatouille-ai.recipebot.recipe_material` "
         f"where recipe_id = b.id) as recipe_material_cnt, "
-        f"(SELECT images FROM `ratatouille-ai.recipebot.recipe` where a.recipe_id = id ) as recipe_image_url, "
-        
+        f"images as recipe_image_url, d.my_like "
         f"FROM `ratatouille-ai.recipebot.recipe_material` as a,`ratatouille-ai.recipebot.recipe` as b, "
         f"ratatouille-ai.recipebot.material as c "
+        f"left join (select recipe_id, my_like from ratatouille-ai.recipebot.user_recipe where line_user_id='{line_user_id}' ) as d on d.recipe_id = b.id "
         f"WHERE a.recipe_id = b.id and a.material_id = c.id and trim(c.name) in ({ingredient_list_str}) "
         f"order by match_cnt desc, recipe_material_cnt asc,b.recipe_name LIMIT 20;"
     )
-
+    print(line_user_id+" is making multiple recipe search")
+    print(QUERY)
     query_job = client.query(QUERY)
     rows = query_job.result()
     reply_message = []
@@ -95,9 +115,9 @@ def multiple_ingredient_search(ingredient_list, ing_num):
     match_cnt_2_recipe_list = []
     single_ing_recipe_list = []
 
-    # 備註: row[0]為recipe_id, row[1]為食譜名稱, row[2]為食譜網址, row[6]為食譜圖片網址
+    # 備註: row[0]為recipe_id, row[1]為食譜名稱, row[2]為食譜網址, row[6]為食譜圖片網址, row[7]是否存為最愛
     for row in rows:
-        dish = [row[0], row[1], row[2], row[6]]
+        dish = [row[0], row[1], row[2], row[6], row[7]]
         if row[4] == row[3]:
             top_match_recipe_list.append(dish)
         elif row[4] == row[3] - 1:
@@ -130,11 +150,20 @@ def multiple_ingredient_search(ingredient_list, ing_num):
 
 # 查看我收藏的食譜
 def get_cookbook(line_user_id):
+    # QUERY = (
+    #         f"SELECT distinct r.id, r.recipe_name, r.URL "
+    #         f"FROM `ratatouille-ai.recipebot.recipe` as r, `ratatouille-ai.recipebot.user_recipe` as ur "
+    #         f"WHERE ur.line_user_id = '{line_user_id}' and r.id = ur.recipe_id and ur.my_like='Y';"
+    # )
+
+    # 2021/12/21 Charles
     QUERY = (
             f"SELECT distinct r.id, r.recipe_name, r.URL "
             f"FROM `ratatouille-ai.recipebot.recipe` as r, `ratatouille-ai.recipebot.user_recipe` as ur "
-            f"WHERE ur.line_user_id = '{line_user_id}' and r.id = ur.recipe_id;"
+            f"WHERE ur.line_user_id = '{line_user_id}' and r.id = ur.recipe_id and ur.my_like='Y';"
     )
+
+
     query_job = client.query(QUERY)
     rows = query_job.result()
     my_favorites = {}
