@@ -21,9 +21,9 @@ from google.cloud import storage
 # 圖像辨識
 from tensorflow.keras.models import load_model
 from PIL import Image, ImageOps
-from tensorflow.keras.applications.efficientnet import EfficientNetB0
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.preprocessing import image as im
-from tensorflow.keras.applications.efficientnet import preprocess_input
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 import numpy as np
 import time
 
@@ -42,7 +42,8 @@ from utils.search_recipe import multiple_ingredient_search
 '''
 # 載入模型
 # model = load_model('core_model/1222_65_DN169_model.h5')
-model = load_model('core_model/1223_65_EFFB0_model.h5')
+# model = load_model('core_model/1223_65_EFFB0_model.h5')
+model = load_model('core_model/1223_MNv2_model.h5')
 # 載入模型Label
 class_dict = {}
 with open('core_model/class_labels.txt', "r", encoding='utf-8') as f:
@@ -116,7 +117,7 @@ class ImageService:
         # print(result_2)
 
         # 對話回應：
-        message = "我猜78趴有這些食材，請選擇："
+        message = "我看87趴有這些食材，請選擇："
         if result_1 == []:
             selection_1 = "沒有食材"
         else:
