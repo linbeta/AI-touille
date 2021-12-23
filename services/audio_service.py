@@ -1,3 +1,5 @@
+# 修改紀錄：
+# 2021/12/21 Charles
 '''
 用戶上傳音訊檔時，將音訊檔從Line取回，轉成文字訊息，
 並將音訊檔放入CloudStorage
@@ -41,12 +43,11 @@ class AudioService:
     '''
 
     @classmethod
-    def line_user_upload_video(cls, event):
+    def line_user_upload_audio(cls, event):
 
         # 取出音檔
         image_blob = cls.line_bot_api.get_message_content(event.message.id)
         temp_file_path = f"""{event.message.id}.mp3"""
-
 
         with open(temp_file_path, 'wb') as fd:
             for chunk in image_blob.iter_content():
@@ -63,16 +64,9 @@ class AudioService:
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(temp_file_path)
 
-        # ----------------------------- 2021.11.24_使用GCP speech-to-text音檔 ---------------------------
-
         # 從雲端取值的作法
         gcs_uri = 'gs://' + bucket_name + '/' + destination_blob_name
         audio = speech.RecognitionAudio(uri=gcs_uri)
-
-        # 直接在當前資料夾取值的做法
-        # with open(temp_file_path, 'rb') as audio_file:
-        #     content = audio_file.read()
-        # audio = speech.RecognitionAudio(content=content)
 
         config = speech.RecognitionConfig(
             {
@@ -85,10 +79,6 @@ class AudioService:
         for result in response.results:
             # print(result.alternatives[0].transcript)
             reply_transcript = result.alternatives[0].transcript
-
-        # ----------------------------- 2021.11.24_使用GCP speech-to-text音檔 測試結束---------------------------
-        # 取得語音轉文字之後~~看要做什麼功能?????????????
-        # 注意喔~~這個每個月超過60分鐘就會開始計費~~~~
 
         # 移除本地檔案
         os.remove(temp_file_path)
@@ -111,15 +101,23 @@ class AudioService:
                 TextSendMessage(reply_message)
             )
         else:
+            # TODO ~~~~~~~~~~~~~~~~~開發中 以下為原版~~~~~~~~~~~~~~~~~~~~~~~
             # TODO: 串接資料庫->複數食材搜尋
-            dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio))
-            reply_msg += dishes
-            # 回覆訊息給使用者
+            # dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio))
+            # reply_msg += dishes
+            # # 回覆訊息給使用者
+            # cls.line_bot_api.reply_message(
+            #     event.reply_token,
+            #     reply_msg
+            # )
+            # TODO: 串接資料庫->複數食材搜尋
+            # 2021/12/21 Charles 新增user_id參數
+            dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio), event.source.user_id)
+            new_template = TextService.make_template(dishes)
+            reply_msg.append(new_template)
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 reply_msg
             )
 
-
         # option:2 ----- 將reply_transcript截取出食材，進資料庫做複數食材搜尋 ------ #
-
