@@ -36,14 +36,14 @@ class TextService:
         if event.message.text == "都不是喔！":
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage("那請問這是什麼？XD")
+                TextSendMessage("我還認不得這樣的照片🤯，請給我四種食材以內的照片，或使用語音搜尋試試看😉")
             )
         # TODO: 施工區：elif裡面先用文字來顯示收藏的食譜,用user_id來搜尋
         elif event.message.text == "收藏的食譜":
             user_id = event.source.user_id
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(f"LIFF app link test: https://ai-touille-i3nmjvjeja-de.a.run.app/{user_id}")
+                TextSendMessage(f"LIFF app link test: https://ai-touille-i3nmjvjeja-de.a.run.app/my_cookbook/{user_id}")
             )
         else:
             user_message = event.message.text
@@ -55,17 +55,19 @@ class TextService:
                     event.reply_token,
                     TextSendMessage(reply_message)
                 )
+            elif ingredients == ['這不是食材']:
+                cls.line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage("請傳有食材的照片，或試試看文字、語音搜尋食譜")
+                )
             else:
                 # 串接資料庫->複數食材搜尋
                 dishes = multiple_ingredient_search(ingredients, len(ingredients), event.source.user_id)
-
-                print("the dish not None")
                 new_template = cls.make_template(dishes)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
                     new_template
                 )
-
 
     # 用結巴分詞抓出資料庫中有的食材的新方法
     @classmethod
@@ -93,10 +95,11 @@ class TextService:
             "哈囉", "你好", "hello", "hi", "Hi", "hihi", "嗨"
         ]
         how_to_use = [
-            "不會用", "使用說明", "操作說明", "說明書", "要怎麼用", "教我用", "這是要怎麼用", "你可以幹什麼", "這是要幹嘛", "怎麼用"
+            "不會用", "使用說明", "操作說明", "說明書", "要怎麼用", "教我用", "這是要怎麼用", "你可以幹什麼", "這是要幹嘛", "怎麼用",
+            "沒有食材"
         ]
         unknown = [
-            "我哪知道", "蛤?", "不知道", "誰知道", "不懂", "..."
+            "我哪知道", "蛤?", "不知道", "誰知道", "不懂", "...", "這不是食材"
         ]
         be_nice = [
             "好喔", "好的", "了解", "XD", "是喔", "OK", "Ok", "ok"
@@ -104,6 +107,7 @@ class TextService:
         give_feedback = [
             "我要留言", "欸不是", "搞錯了", "抱怨"
         ]
+
         intent = ""
         for word in say_hi:
             if word in text:
@@ -144,8 +148,7 @@ class TextService:
 
     @classmethod
     def make_template(cls, dishes):
-        print("dishes: " + str(dishes))
-
+        # print("dishes: " + str(dishes))
         # 2021/12/21 Charles
         for i in dishes:
             if i[4] == "Y":
@@ -157,9 +160,9 @@ class TextService:
                 # i[1] = "新增最愛: " + str(i[1])
                 i[0] = "I," + str(i[0])
 
-        cs=[]
-        print(len(dishes))
-        for j in range(len(dishes)):
+        cs = []
+        # print(len(dishes))
+        for j in range(len(dishes[:9])):
             cc = CarouselColumn(
                 thumbnail_image_url=dishes[j][3],
                 title=dishes[j][1],
@@ -178,15 +181,15 @@ class TextService:
             )
             cs.append(cc)
         # print(cs)
-        print(str(cs))
+        # print(str(cs))
         TipCard = CarouselColumn(
-            thumbnail_image_url='https://github.com/linbeta/AI-touille/blob/main/pic/background.jpeg?raw=true',
-            title='小密技',
-            text="想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
+            thumbnail_image_url='https://github.com/linbeta/AI-touille/blob/main/pic/tips.jpg?raw=true',
+            title='搜尋結果怪怪的？',
+            text=cls.get_tip(),
             actions=[
                 URITemplateAction(
                     label='沒有我要的食譜',
-                    uri='https://icook.tw/'  #TODO 這邊要修改~看要放哭哭網站圖?
+                    uri='https://icook.tw/'  # TODO 這邊要修改~看要放哭哭網站圖?
                 ),
                 MessageTemplateAction(
                     label='給建議',
@@ -195,7 +198,7 @@ class TextService:
             ]
         )
         cs.append(TipCard)
-        print("Finished CS")
+        # print("Finished CS")
         # todo 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
         try:
             recipe_template_message = TemplateSendMessage(
@@ -207,92 +210,16 @@ class TextService:
         except Exception as e:
             print(e)
 
-        # 2021/12/21 Charles
-        # recipe_template_message = TemplateSendMessage(
-        #     alt_text='Carousel template',
-        #     template=CarouselTemplate(
-        #         columns=[
-        #             # todo 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
-        #             CarouselColumn(
-        #                 thumbnail_image_url=dishes[0][3],
-        #                 title=dishes[0][1],
-        #                 text=' ',
-        #                 actions=[
-        #                     URITemplateAction(
-        #                         label='食譜連結點我',
-        #                         uri=dishes[0][2]
-        #                     ),
-        #                     PostbackAction(
-        #                         label= dishes[0][4],
-        #                         display_text=dishes[0][1],
-        #                         data=dishes[0][0]
-        #                     )
-        #                 ]
-        #             ),
-        #             CarouselColumn(
-        #                 thumbnail_image_url=dishes[1][3],
-        #                 title=dishes[1][1],
-        #                 text=' ',
-        #                 actions=[
-        #                     URITemplateAction(
-        #                         label='食譜連結點我',
-        #                         uri=dishes[1][2]
-        #                     ),
-        #                     PostbackAction(
-        #                         label=dishes[1][4],
-        #                         display_text=dishes[1][1],
-        #                         data=dishes[1][0]
-        #                     )
-        #                 ]
-        #             ),
-        #             CarouselColumn(
-        #                 thumbnail_image_url=dishes[2][3],
-        #                 title=dishes[2][1],
-        #                 text=' ',
-        #                 actions=[
-        #                     URITemplateAction(
-        #                         label='食譜連結點我',
-        #                         uri=dishes[2][2]
-        #                     ),
-        #                     PostbackAction(
-        #                         label=dishes[2][4],
-        #                         display_text=dishes[2][1],
-        #                         data=dishes[2][0]
-        #                     )
-        #                 ]
-        #             ),
-        #             CarouselColumn(
-        #                 thumbnail_image_url=dishes[3][3],
-        #                 title=dishes[3][1],
-        #                 text=' ',
-        #                 actions=[
-        #                     URITemplateAction(
-        #                         label='連結點這邊',
-        #                         uri=dishes[3][2]
-        #                     ),
-        #                     PostbackAction(
-        #                         label=dishes[3][4],
-        #                         display_text=dishes[3][1],
-        #                         data=dishes[3][0]
-        #                     )
-        #                 ]
-        #             ),
-        #             CarouselColumn(
-        #                 thumbnail_image_url='https://github.com/linbeta/AI-touille/blob/main/pic/background.jpeg?raw=true',
-        #                 title='小密技',
-        #                 text="想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
-        #                 actions=[
-        #                     URITemplateAction(
-        #                         label='沒有我要的食譜',
-        #                         uri='https://icook.tw/'  #TODO 這邊要修改~看要放哭哭網站圖?
-        #                     ),
-        #                     MessageTemplateAction(
-        #                         label='給建議',
-        #                         text='我要留言'
-        #                     )
-        #                 ]
-        #             ),
-        #         ]
-        #     )
-        # )
         return recipe_template_message
+
+    @classmethod
+    def get_tip(cls):
+        tips = [
+            "想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
+            "拍照或上傳照片時，食材種類在4種以內辨識效果會較好喔！",
+            "語音和照片搜尋不到時，直接打字試試看吧！",
+            "請試試語音輸入整句話：我有紅蘿蔔番茄和馬鈴薯"
+            "請換個食材名稱或是換句話說試試看:D"
+        ]
+        random.shuffle(tips)
+        return tips[0]
