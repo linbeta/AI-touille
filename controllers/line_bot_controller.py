@@ -19,7 +19,7 @@ from services.user_service import UserService
 from services.video_service import VideoService
 from services.audio_service import AudioService
 from services.text_service import TextService
-
+from services.email_sevice import EmailService
 
 from urllib.parse import parse_qs
 
@@ -59,6 +59,11 @@ class LineBotController:
     @classmethod
     def handle_audio_message(cls, event):
         AudioService.line_user_upload_video(event)
+        return "OK"
+
+    @classmethod
+    def handle_user_message(cls, event):
+        EmailService.line_user_leave_message(event)
         return "OK"
 
     # 擷取event的data欄位，並依照function_name，丟入不同的方法

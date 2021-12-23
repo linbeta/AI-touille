@@ -56,6 +56,15 @@ import google.cloud.logging
 from google.cloud.logging.handlers import CloudLoggingHandler
 
 
+# 生成liff套件
+from flask import Flask
+app = Flask(__name__)
+from flask import request, abort, render_template
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
+
+
+
 client = google.cloud.logging.Client()
 
 # 建立line event log，用來記錄line event
@@ -140,6 +149,48 @@ def get_user():
     result = UserController.get_user(request)
     return result
 
+# ============  LIFF 靜態頁面 (起) ============
+
+@app.route('/form')
+def page():
+	return render_template('form.html', liffid = liffid)
+
+@handler.add(MessageEvent, message=TextMessage)
+def manageForm(event, mtext):
+    try:
+        flist = mtext[3:].split('/')
+        text1 = '姓名：' + flist[0] + '\n'
+        text1 += '留言內容：' + flist[1]
+        message = TextSendMessage(
+            text = text1
+        )
+        line_bot_api.reply_message(event.reply_token,message)
+        LineBotController.handle_user_message(message)
+    except:
+        line_bot_api.reply_message(event.reply_token,TextSendMessage(text='發生錯誤！'))
+
+    # =================== LIFF靜態頁面(始) ===================
+
+    liffid = os.environ["LIFF_ID"]
+
+    @app.route('/message')
+    def form():
+        return render_template('form.html', liffid = liffid)
+
+    @handler.add(MessageEvent, message=TextMessage)
+    def manageForm(event, mtext):
+        try:
+            flist = mtext[3:].split('/')
+            text1 = '姓名：' + flist[0] + '\n'
+            text1 += '留言內容：' + flist[1]
+            message = TextSendMessage(
+                text = text1
+            )
+            line_bot_api.reply_message(event.reply_token,message)
+        except:
+            line_bot_api.reply_message(event.reply_token,TextSendMessage(text='發生錯誤！'))
+
+    # =================== LIFF靜態頁面(終) ===================
 
 if __name__ == "__main__":
     # 本地跑ngrok用
