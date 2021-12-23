@@ -21,9 +21,9 @@ from google.cloud import storage
 # 圖像辨識
 from tensorflow.keras.models import load_model
 from PIL import Image, ImageOps
-from tensorflow.keras.applications.densenet import DenseNet169
+from tensorflow.keras.applications.efficientnet import EfficientNetB0
 from tensorflow.keras.preprocessing import image as im
-from tensorflow.keras.applications.densenet import preprocess_input, decode_predictions
+from tensorflow.keras.applications.efficientnet import preprocess_input
 import numpy as np
 import time
 
@@ -41,7 +41,8 @@ from utils.search_recipe import multiple_ingredient_search
 載入模型與類別列表，訓練模型的class_labels.txt檔案使用中文需要設定編碼為"utf-8"
 '''
 # 載入模型
-model = load_model('core_model/1222_65_DN169_model.h5')
+# model = load_model('core_model/1222_65_DN169_model.h5')
+model = load_model('core_model/1223_65_EFFB0_model.h5')
 # 載入模型Label
 class_dict = {}
 with open('core_model/class_labels.txt', "r", encoding='utf-8') as f:
