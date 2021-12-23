@@ -9,9 +9,9 @@ def insertRecipe(dish_name, dish_url, seasoning, img_url):
     # print(len(dish_name))
 
     if len(dish_name) > 0:
-        # QUERY = "SELECT count(id) FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "'" 
-        # QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "' limit 1" 
-        QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where URL='" + dish_url + "' limit 1"
+        # QUERY = "SELECT count(id) FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "'"
+        # QUERY = "SELECT id FROM ratatouille-ai.recipebot.recipe where recipe_name='" + dish_name + "' limit 1"
+        QUERY = f"SELECT id FROM ratatouille-ai.recipebot.recipe where URL='{dish_url}' limit 1"
 
         query_job = client.query(QUERY)  # API request
         rows = query_job.result()  # Waits for query to finish
@@ -50,10 +50,13 @@ def insertRecipe(dish_name, dish_url, seasoning, img_url):
 
             # cur_time=datetime.timestamp(datetime.now())
             # print (cur_time)
-            QUERY = "insert into ratatouille-ai.recipebot.recipe (id,recipe_name,URL,publisher_id,process_time,complexity,seasoning, images, abstract, created_time,updated_time) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe),'" \
-                    + dish_name + "','" + dish_url + "'," + str(
-                publisher_id) + ",'30','M','" + seasoning + "','" + img_url + "','',(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
-            # print (QUERY)
+            QUERY = (f"insert into ratatouille-ai.recipebot.recipe (id,recipe_name,URL,publisher_id,"
+                     f"process_time,complexity,seasoning, images, abstract, created_time,updated_time) "
+                     f"values ((select count(id)+1 from ratatouille-ai.recipebot.recipe),'{dish_name}',"
+                     f"'{dish_url}',{str(publisher_id)},'30','M','{seasoning}','{img_url}','',"
+                     f"(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
+                     )
+            print (QUERY)
             # QUERY = "insert into ratatouille-ai.recipebot.recipe (id,recipe_name,URL,publisher_id,process_time,complexity,abstract) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe),'"+dish_name+ "','" + dish_url + "',"+ str(publisher_id) +",'30','M','')"
 
             query_job = client.query(QUERY)  # API request
@@ -107,10 +110,9 @@ def insertMaterials(material_string):
                     # print (row_2)
                     material_id = material_id + "," + str(row_2[0])
 
-                # QUERY = "Insert into ratatouille-ai.recipebot.material (id, name, status, catagory) values ("+ str(row_2[0]) +",'"+ str(i).strip()+"', 'A', '')" 
-                QUERY = "Insert into ratatouille-ai.recipebot.material (id, name, status, catagory, created_time, updated_time) values (" + str(
-                    row_2[0]) + ",'" + str(
-                    i).strip() + "', 'A', '',(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
+                # QUERY = "Insert into ratatouille-ai.recipebot.material (id, name, status, catagory) values ("+ str(row_2[0]) +",'"+ str(i).strip()+"', 'A', '')"
+                QUERY = (f"Insert into ratatouille-ai.recipebot.material (id, name, status, catagory, created_time, updated_time) "
+                         f"values ({str(row_2[0])},'{str(i).strip()}', 'A', '',(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))")
 
                 query_job = client.query(QUERY)  # API request
                 rows_2 = query_job.result()  # Waits for query to finish
@@ -131,13 +133,13 @@ def insertRecipeMaterial(recipe_id, material_ids_string):
 
     for i in material_ids:
         print("insert relations: recipe_id: " + str(recipe_id) + " ; material_id: " + str(i))
-        QUERY = "Insert into ratatouille-ai.recipebot.recipe_material (id, recipe_id, material_id, created_time,updated_time) values ((select count(id)+1 from ratatouille-ai.recipebot.recipe_material)," + str(
-            recipe_id) + "," + i + ",(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))"
+        QUERY = (f"Insert into ratatouille-ai.recipebot.recipe_material (id, recipe_id, material_id, created_time,updated_time) "
+                 f"values ((select count(id)+1 from ratatouille-ai.recipebot.recipe_material),{str(recipe_id)},{i},(SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP))")
 
         query_job = client.query(QUERY)  # API request
         rows = query_job.result()  # Waits for query to finish
     # for i in material_ids:
-    #     QUERY = "SELECT count(*) FROM ratatouille-ai.recipebot.recipe_material where recipe_id=" + str(recipe_id)  + " and material_id=" +str(i) 
+    #     QUERY = "SELECT count(*) FROM ratatouille-ai.recipebot.recipe_material where recipe_id=" + str(recipe_id)  + " and material_id=" +str(i)
 
     #     query_job = client.query(QUERY)  # API request
     #     rows = query_job.result()  # Waits for query to finish
