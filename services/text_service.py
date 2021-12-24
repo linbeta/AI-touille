@@ -4,8 +4,7 @@ TextMessage ==>用戶傳來的
 TexSendtMessage ==>我們傳給用戶的
 '''
 
-from models.user import User
-from flask import Request
+
 from linebot import (
     LineBotApi
 )
