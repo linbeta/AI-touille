@@ -9,8 +9,6 @@ from services.user_service import UserService
 from linebot import (
     LineBotApi
 )
-import app
-
 
 class EmailService:
     line_bot_api = LineBotApi(
