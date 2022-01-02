@@ -130,6 +130,9 @@ export FOOD_IMAGE_BUCKET_NAME="ai-touille-food-image"
 ### 連線鑰匙
 上傳專案程式碼資料時請勿將 keys 資料夾上傳，專案的.gitignore檔案中有設定不同步keys資料夾，記得如果拉到GCP上面使用時要手動將keys資料夾加進去，我在團隊Google Drive中有放一份，如果需要也可以到GCP中再生一支鑰匙來使用。
 
+### bigquery資料移轉
+若要把資料集當中的table複製到另一個資料集, "資料位置"要一樣. e.g. asia-east1 or US
+
 
 ### 參考資料
 1. [flask-ngrok GitHub issue: Virtualenv support #2 討論串](https://github.com/gstaff/flask-ngrok/issues/2)
