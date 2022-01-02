@@ -31,21 +31,29 @@ class TextService:
         '''
         載入類別列表，訓練模型的labels.txt檔案使用中文需要設定編碼為"utf-8"
         '''
-
-        if event.message.text == "都不是喔！":
+        user_message = event.message.text
+        if user_message == "都不是喔！":
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage("我還認不得這樣的照片🤯，請給我四種食材以內的照片，或使用語音搜尋試試看😉")
             )
         # TODO: 施工區：elif裡面先用文字來顯示收藏的食譜,用user_id來搜尋
-        elif event.message.text == "收藏的食譜":
+        elif user_message == "收藏的食譜":
             user_id = event.source.user_id
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(f"LIFF app link test: https://ai-touille-i3nmjvjeja-de.a.run.app/my_cookbook/{user_id}")
+                TextSendMessage(f"我收藏的食譜: https://ai-touille-i3nmjvjeja-de.a.run.app/my_cookbook/{user_id}")
+                # TextSendMessage(f"我收藏的食譜: https://e8bb-180-218-204-111.ngrok.io/my_cookbook/{user_id}")
+            )
+        # TODO: 施工區:處理官網留言
+        elif user_message[:3] == "###":
+            print("this is a message form")
+            msg = cls.manageForm(user_message)
+            cls.line_bot_api.reply_message(
+                event.reply_token,
+                msg
             )
         else:
-            user_message = event.message.text
             ingredients = cls.get_ingredients(user_message)
             if len(ingredients) == 0:
                 # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
@@ -188,7 +196,7 @@ class TextService:
             actions=[
                 URITemplateAction(
                     label='沒有我要的食譜',
-                    uri='https://icook.tw/'  # TODO 這邊要修改~看要放哭哭網站圖?
+                    uri='https://icook.tw/'  # TODO 這邊先放icook的連結
                 ),
                 MessageTemplateAction(
                     label='給建議',
@@ -198,7 +206,7 @@ class TextService:
         )
         cs.append(TipCard)
         # print("Finished CS")
-        # todo 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
+        # 確認是否每個食材都會有>4的食譜 -> 若無, 用for迴圈把dish的變數寫入
         try:
             recipe_template_message = TemplateSendMessage(
                 alt_text='Carousel template',
@@ -217,8 +225,21 @@ class TextService:
             "想一次搜尋多樣食材組合嗎？試試看開啟麥克風用講的吧！",
             "拍照或上傳照片時，食材種類在4種以內辨識效果會較好喔！",
             "語音和照片搜尋不到時，直接打字試試看吧！",
-            "請試試語音輸入整句話：我有紅蘿蔔番茄和馬鈴薯"
-            "請換個食材名稱或是換句話說試試看:D"
+            "請試試語音輸入整句話：我有紅蘿蔔、番茄和馬鈴薯",
+            "想看更多食譜嗎？試試看換個食材名稱或是換句話說:D"
         ]
         random.shuffle(tips)
         return tips[0]
+
+    @classmethod
+    def manageForm(cls, mtext):
+        try:
+            flist = mtext[3:].split('/')
+            text1 = '姓名：' + flist[0] + '\n'
+            text1 += '建議：' + flist[1]
+            message = TextSendMessage(
+                text=text1
+            )
+            return message
+        except:
+            return "發生錯誤！"
