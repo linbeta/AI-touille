@@ -8,48 +8,21 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/aitouille-adam.json"
 client = bq.Client()
 
 
-def use_result_tag_to_query(ingredient_main):
-    try:
-        QUERY = (
-            f"SELECT b.url FROM `ratatouille-ai.test_upload_csv.mvp_recipe` as b where b.ingredient_main = '{ingredient_main}' "
-        )
-        query_job = client.query(QUERY)
-        rows = query_job.result()
-        # 把要回傳給user的食譜存成reply_recipe_list
-        reply_recipe_list = []
-
-        for row in rows:
-            reply_recipe_list.append(row[0])
-
-        # 把搜尋到的食譜們洗牌
-        shuffle(reply_recipe_list)
-        # 抓洗牌後的的第1個來回傳，讓推薦食譜有點變化
-        reply_recipe = reply_recipe_list[0]
-        # print(reply_recipe)
-        reply_message = TextSendMessage(f"推薦含有「{ingredient_main}」的食譜： {reply_recipe}")
-        # print(reply_message)
-        # 回傳推薦食譜
-        return reply_message
-    except:
-        reply_message = TextSendMessage("食譜資料庫擴充中，敬請期待未來的AI服務~")
-        return reply_message
-
-
 def multiple_ingredient_search(ingredient_list, ing_num, line_user_id):
     ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
 
     QUERY = (
         f"SELECT distinct b.id, b.recipe_name, b.URL, {ing_num} as user_material_cnt, "
-        f"(select count(x.id) from `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y,"
-        f"`ratatouille-ai.recipebot.recipe` z "
+        f"(select count(x.id) from `aitouille-adam.recipebot.recipe_material` x, `aitouille-adam.recipebot.material` y,"
+        f"`aitouille-adam.recipebot.recipe` z "
         f"where x.material_id=y.id and x.recipe_id=z.id  and trim(y.name) in ({ingredient_list_str}) "
         f"and z.id=b.id) as match_cnt, "
-        f"(select count(material_id) from `ratatouille-ai.recipebot.recipe_material` "
+        f"(select count(material_id) from `aitouille-adam.recipebot.recipe_material` "
         f"where recipe_id = b.id) as recipe_material_cnt, "
         f"images as recipe_image_url, d.my_like "
-        f"FROM `ratatouille-ai.recipebot.recipe_material` as a,`ratatouille-ai.recipebot.recipe` as b, "
-        f"ratatouille-ai.recipebot.material as c "
-        f"left join (select recipe_id, my_like from ratatouille-ai.recipebot.user_recipe where line_user_id='{line_user_id}' ) as d on d.recipe_id = b.id "
+        f"FROM `aitouille-adam.recipebot.recipe_material` as a,`aitouille-adam.recipebot.recipe` as b, "
+        f"aitouille-adam.recipebot.material as c "
+        f"left join (select recipe_id, my_like from aitouille-adam.recipebot.user_recipe where line_user_id='{line_user_id}' ) as d on d.recipe_id = b.id "
         f"WHERE a.recipe_id = b.id and a.material_id = c.id and trim(c.name) in ({ingredient_list_str}) "
         f"order by match_cnt desc, recipe_material_cnt asc,b.recipe_name LIMIT 20;"
     )
@@ -98,7 +71,7 @@ def multiple_ingredient_search(ingredient_list, ing_num, line_user_id):
 def get_cookbook(line_user_id):
     QUERY = (
         f"SELECT distinct r.id, r.recipe_name, r.URL "
-        f"FROM `ratatouille-ai.recipebot.recipe` as r, `ratatouille-ai.recipebot.user_recipe` as ur "
+        f"FROM `aitouille-adam.recipebot.recipe` as r, `aitouille-adam.recipebot.user_recipe` as ur "
         f"WHERE ur.line_user_id = '{line_user_id}' and r.id = ur.recipe_id and ur.my_like='Y';"
     )
 
@@ -113,7 +86,7 @@ def get_cookbook(line_user_id):
 
 def get_all_material_names():
     QUERY = (
-        f"SELECT m.name FROM `ratatouille-ai.recipebot.material` as m"
+        f"SELECT m.name FROM `aitouille-adam.recipebot.material` as m"
     )
     query_job = client.query(QUERY)
     rows = query_job.result()
