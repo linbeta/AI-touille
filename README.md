@@ -13,7 +13,9 @@ ID: @096oeofl
 
 ## 版本更新紀錄
 
-```v3.0.3``` 更換影像辨識核心(MobileNetV2)測試
+```v3.1.0``` 收藏的食譜頁可取消收藏
+
+```v3.0.5``` 更換影像辨識核心(MobileNetV2)測試
 
 ```v3.0.2``` 更換影像辨識核心(DenseNet169)測試
 
@@ -60,7 +62,7 @@ pip3 install -r requirements.txt
 ##### tensorflow-cpu
 GCP上運行的套件tensorflow-cpu有指定版本：
 ```
-tensorflow-cpu == 2.4.1
+tensorflow-cpu == 2.7.0
 ```
 本機端或是GCP跑ngrok時如果安裝完套件有跳錯誤碼請手動安裝更新，或是將上面那行的版本號移除。
 
@@ -83,6 +85,8 @@ USER_INFO_TEMP_BUCKET_NAME：存到 temp_food_image_mvp 這個 bucket
 FOOD_IMAGE_BUCKET_NAME：存到 food-image-mvp 這個 bucket
 
 GOOGLE_APPLICATION_CREDENTIALS: 設定存鑰匙的位置為 keys/ratatouille-ai-e6daa9d44a92.json
+
+LIFF_ID: 登入LINE Developer查看要串接的LINE login裡面的LIFF ID
 ```
 
 
@@ -128,6 +132,8 @@ export FOOD_IMAGE_BUCKET_NAME="food-image-mvp"
 
 
 ### 參考資料
-[flask-ngrok GitHub issue: Virtualenv support #2 討論串](https://github.com/gstaff/flask-ngrok/issues/2)
+1. [flask-ngrok GitHub issue: Virtualenv support #2 討論串](https://github.com/gstaff/flask-ngrok/issues/2)
+
+2. [簡明 Python LINE Bot & LIFF JS SDK 入門教學](https://blog.techbridge.cc/2020/01/12/%E7%B0%A1%E6%98%8E-python-line-bot-&-liff-js-sdk%E5%85%A5%E9%96%80%E6%95%99%E5%AD%B8/)
 
 

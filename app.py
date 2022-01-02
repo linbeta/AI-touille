@@ -1,6 +1,5 @@
-## ========== 設定line_bot  ==========
 import os
-
+from time import sleep
 channel_access_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 channel_secret = os.environ["LINE_CHANNEL_SECRET"]
 
@@ -25,6 +24,7 @@ from linebot.exceptions import (
 from controllers.line_bot_controller import LineBotController
 from services.user_service import UserService
 from utils.search_recipe import get_cookbook
+from utils.favorites import remove_recipe_from_cookbook
 from controllers.user_controller import UserController
 
 app = Flask(__name__)
@@ -77,21 +77,23 @@ run_with_ngrok(app)
 網頁
 '''
 
-
-@app.route('/test')
-def hello_world():
-    bot_event_logger.info("test")
-    return 'Hello, World!'
-
-
 # 用line_user_id來搜尋資料庫裡面儲存的食譜
-@app.route('/my_cookbook/<user_id>', methods=['GET'])
+@app.route('/my_cookbook/<user_id>', methods=['GET', 'POST'])
 def open_my_cookbook(user_id):
     user_object = UserService.get_user(user_id)
     user_nickname = user_object.line_user_nickname
     recipe_dict = get_cookbook(user_id)
-    # user_id
-    # render_template('my_cookbook.html')
+    # print(recipe_dict)
+    if request.method == 'POST':
+        try:
+            remove_id = request.get_data(as_text=True).split("=")[0]
+            # print(remove_id)
+            remove_recipe_from_cookbook(user_id, int(remove_id))
+            sleep(1.0)
+            recipe_dict = get_cookbook(user_id)
+            # print(recipe_dict)
+        except:
+            pass
     return render_template('my_cookbook.html', search_result=recipe_dict, nickname=user_nickname)
 
 
@@ -99,11 +101,10 @@ def open_my_cookbook(user_id):
 轉發功能列表
 '''
 
-
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+    signature = request.headers['x-line-signature']
     # get request body as text
     body = request.get_data(as_text=True)
     bot_event_logger.info(body)
@@ -160,25 +161,25 @@ def handle_postback_event(event):
 
 
 # =================== LIFF靜態頁面(始) ===================
-liffid = os.environ["LIFF_ID"]
-@app.route('/form')
-def form():
-    return render_template('form.html', liffid=liffid)
+# liffid = os.environ["LIFF_ID"]
+# @app.route('/form')
+# def form():
+#     # data = request.get_data()
+#     # print(data)
+#     return render_template('form.html', myliffid=liffid)
 
-@handler.add(MessageEvent, message=TextMessage)
-def manageForm(event, mtext):
-    try:
-        flist = mtext[3:].split('/')
-        text1 = '姓名：' + flist[0] + '\n'
-        text1 += '留言內容：' + flist[1]
-        message = TextSendMessage(
-            text=text1
-        )
-        line_bot_api.reply_message(event.reply_token, message)
-        LineBotController.handle_user_message(message)
 
-    except:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='發生錯誤！'))
+# @handler.add(MessageEvent, message=TextMessage)
+# def handle_message(event):
+#     mtext = event.message.text
+#     if mtext == '@彈性配置':
+#         sendFlex(event)
+#
+#     elif mtext[:3] == '###' and len(mtext) > 3:
+#          manageForm(event, mtext)
+
+
+
 
 # =================== LIFF靜態頁面(終) ===================
 

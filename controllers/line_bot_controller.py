@@ -91,7 +91,7 @@ class LineBotController:
             pass
         elif str(event.postback.data)[0]=="I": #傳入欲新增的食譜id # 2021/12/21 Charles
             user_id = event.source.user_id
-            print("Saving " + user_id + "'s favorite" )
+            # print("Saving " + user_id + "'s favorite")
             recipe_id_data = int(str(event.postback.data)[2:])
             # recipe_id_data = int(event.postback.data) # 這邊的recipe_id_data為dish list中第一個值, 也就是recipe_id
             '''判斷邏輯
@@ -104,12 +104,12 @@ class LineBotController:
                 f"Select id from `ratatouille-ai.recipebot.user_recipe` "
                 f"where recipe_id = {recipe_id_data} and line_user_id = '{user_id}';"
             )
-            print(Query)
+            # print(Query)
             query_job = bq_client.query(Query)  # API request
             rows = query_job.result()  # Waits for query to finish
 
             num_results = rows.total_rows
-            print("num_results: "+str(num_results))
+            # print("num_results: "+str(num_results))
 
             if num_results == 0:
                 # 使用者點喜歡後，將該食譜id存入user_recipe資料庫中
@@ -121,36 +121,30 @@ class LineBotController:
                 )
                 query_job = bq_client.query(Query)
                 # see_result = query_job.result()
-                print("最愛儲存成功")
+                # print("最愛儲存成功")
                 line_bot_api.reply_message(
                     event.reply_token,
                     TextSendMessage("已儲存")
                 )
             else:
-                print("Favorite already saved.")
+                # print("Favorite already saved.")
                 line_bot_api.reply_message(
                     event.reply_token,
                     TextSendMessage("已儲存")
                 )
-            # TODO 機器人回覆文字&卡片輪播一起
-            # TODO 我喜歡 xxxx 改成 斷句
-            # TODO 卡片可以擴建到5~6張?
             # TODO 照片or語音認錯~~~點選都不是?? quick reply or 最後一張卡片呈現 (告訴user要怎麼弄) ???????????
-            # TODO 存入喜用者喜好的LIST ~~~ 機器人回吐 "已收藏" ??? 顯示已收藏食譜  & -> beta
         elif str(event.postback.data)[0]=="D": #傳入欲刪除的食譜id # 2021/12/21 Charles
             user_id = event.source.user_id
-            print("Removing " + user_id + "'s favorite" )
+            # print("Removing " + user_id + "'s favorite" )
             recipe_id_data = int(str(event.postback.data)[2:])
             Query = (
                 f"Delete `ratatouille-ai.recipebot.user_recipe` "
                 f"where recipe_id = {recipe_id_data} and line_user_id = '{user_id}';"
             )
-            print(Query)
+            # print(Query)
             query_job = bq_client.query(Query)  # API request
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage("已取消")
             )
-
-
         return 'no'

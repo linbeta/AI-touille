@@ -16,15 +16,15 @@
     <div class="container">
         <div class="container-sm custom-center">
             <h2>{{ nickname }} 收藏的食譜</h2>
-            <img src="{{ user_pic }}" alt="">
             {% for item in search_result %}
             <div class="recipe">
-                <a href="{{search_result[item]['recipe_url']}}">{{ search_result[item]['recipe_name'] }}</a>
+                <form action="" method="post" id="{{ search_result[item]['recipe_id'] }}">
+                    <a href="{{search_result[item]['recipe_url']}}">{{ search_result[item]['recipe_name'] }}</a>
+                    <input type="submit" value="取消收藏" class="btn btn-primary"
+                        name="{{ search_result[item]['recipe_id'] }}" style="float: right">
+                </form>
             </div>
             {% endfor %}
-            <div class="d-grid gap-2 col-6 mx-auto backButton">
-                <!-- <a class="btn btn-primary" href="/" role="button">再查一次</a> -->
-            </div>
         </div>
     </div>
     <div class="notes">

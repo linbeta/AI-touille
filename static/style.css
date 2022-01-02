@@ -9,6 +9,7 @@ h1 {
 h2, h3 {
     margin: 0 auto;
     padding: 0.9rem 0.5rem;
+    padding-bottom: 2rem;
     text-align: center;
     line-height: 1;
 }
@@ -25,9 +26,14 @@ p {
     font-size: 0.9rem;
 }
 
+.btn {
+    overflow: hidden;
+    width: 100px;
+}
+
 .container-sm {
     margin: 2rem auto 1rem;
-    max-width: 50%;
+    max-width: 100%;
     min-width: 300px;
 }
 
@@ -37,8 +43,9 @@ p {
 
 .recipe {
     font-size: 1.2rem;
-    padding-left: 5rem;
-    line-height: 2.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    line-height: 3rem;
 }
 
 .backButton {
@@ -103,7 +110,7 @@ footer a:hover {
 
 }
 
-@media only screen and (max-width: 992px) {
+@media only screen and (min-width: 992px) {
 
     h3 {
         font-size: 1.2rem;
@@ -112,6 +119,6 @@ footer a:hover {
     }
 
     .custom-center {
-        max-width: 80%;
+        max-width: 60%;
     }
 }

@@ -1,6 +1,3 @@
-# 修改紀錄：
-# 2021/12/21 Charles
-
 from random import shuffle
 import os
 from google.cloud import bigquery as bq
@@ -38,26 +35,9 @@ def use_result_tag_to_query(ingredient_main):
         return reply_message
 
 
-# todo: ================== 施工完成80% ======================
-
 def multiple_ingredient_search(ingredient_list, ing_num, line_user_id):
     ingredient_list_str = ", ".join(repr(e) for e in ingredient_list)
-    # QUERY = (
-    #     f"SELECT distinct b.id, b.recipe_name, b.URL, {ing_num} as user_material_cnt, "
-    #     f"(select count(x.id) from `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y,"
-    #     f"`ratatouille-ai.recipebot.recipe` z "
-    #     f"where x.material_id=y.id and x.recipe_id=z.id  and trim(y.name) in ({ingredient_list_str}) "
-    #     f"and z.id=b.id) as match_cnt, "
-    #     f"(select count(material_id) from `ratatouille-ai.recipebot.recipe_material` "
-    #     f"where recipe_id = b.id) as recipe_material_cnt, "
-    #     f"(SELECT images FROM `ratatouille-ai.recipebot.recipe` where a.recipe_id = id ) as recipe_image_url, "
-    #     f"FROM `ratatouille-ai.recipebot.recipe_material` as a,`ratatouille-ai.recipebot.recipe` as b, "
-    #     f"ratatouille-ai.recipebot.material as c "
-    #     f"WHERE a.recipe_id = b.id and a.material_id = c.id and trim(c.name) in ({ingredient_list_str}) "
-    #     f"order by match_cnt desc, recipe_material_cnt asc,b.recipe_name LIMIT 20;"
-    # )
 
-    # 2021/12/21 Charles
     QUERY = (
         f"SELECT distinct b.id, b.recipe_name, b.URL, {ing_num} as user_material_cnt, "
         f"(select count(x.id) from `ratatouille-ai.recipebot.recipe_material` x, `ratatouille-ai.recipebot.material` y,"
@@ -113,15 +93,9 @@ def multiple_ingredient_search(ingredient_list, ing_num, line_user_id):
     else:
         return []
 
+
 # 查看我收藏的食譜
 def get_cookbook(line_user_id):
-    # QUERY = (
-    #         f"SELECT distinct r.id, r.recipe_name, r.URL "
-    #         f"FROM `ratatouille-ai.recipebot.recipe` as r, `ratatouille-ai.recipebot.user_recipe` as ur "
-    #         f"WHERE ur.line_user_id = '{line_user_id}' and r.id = ur.recipe_id and ur.my_like='Y';"
-    # )
-
-    # 2021/12/21 Charles
     QUERY = (
         f"SELECT distinct r.id, r.recipe_name, r.URL "
         f"FROM `ratatouille-ai.recipebot.recipe` as r, `ratatouille-ai.recipebot.user_recipe` as ur "
