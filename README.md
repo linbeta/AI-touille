@@ -127,6 +127,10 @@ export USER_INFO_TEMP_BUCKET_NAME="temp_food_image"
 export FOOD_IMAGE_BUCKET_NAME="ai-touille-food-image"
 ```
 
+
+若cloud run部署後, 出錯 keys資料夾找不到. 試著在.gcloudignore中加入 .git 和 .gitignore
+
+
 ### 連線鑰匙
 上傳專案程式碼資料時請勿將 keys 資料夾上傳，專案的.gitignore檔案中有設定不同步keys資料夾，記得如果拉到GCP上面使用時要手動將keys資料夾加進去，我在團隊Google Drive中有放一份，如果需要也可以到GCP中再生一支鑰匙來使用。
 
