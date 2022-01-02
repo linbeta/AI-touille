@@ -42,7 +42,7 @@ class TextService:
             user_id = event.source.user_id
             cls.line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(f"我收藏的食譜: https://ai-touille-i3nmjvjeja-de.a.run.app/my_cookbook/{user_id}")
+                TextSendMessage(f"我收藏的食譜: https://ai-touille-6qzlayuaza-de.a.run.app/my_cookbook/{user_id}")
                 # TextSendMessage(f"我收藏的食譜: https://e8bb-180-218-204-111.ngrok.io/my_cookbook/{user_id}")
             )
         # TODO: 施工區:處理官網留言
