@@ -22,7 +22,7 @@ from services.user_service import UserService
 # 處理文字
 from services.text_service import TextService
 # 搜尋食譜
-from utils.search_recipe import use_result_tag_to_query, multiple_ingredient_search
+from utils.search_recipe import multiple_ingredient_search
 
 # 檔案下載與上傳專用
 import urllib.request
