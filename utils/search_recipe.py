@@ -4,7 +4,7 @@ from google.cloud import bigquery as bq
 from linebot.models import TextSendMessage
 
 # 這一行是串連到GCP的鑰匙,本地跑ngrok時要開起來，部屬時從container設定環境變數，請註解掉避免噴錯
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/aitouille-adam.json"
 client = bq.Client()
 
 
