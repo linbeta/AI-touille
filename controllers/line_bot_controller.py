@@ -31,7 +31,7 @@ from services.email_sevice import EmailService
 from google.cloud import bigquery as bq
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/aitouille-adam.json"
 
 from urllib.parse import parse_qs
 

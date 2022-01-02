@@ -152,7 +152,7 @@ def insertRecipeMaterial(recipe_id, material_ids_string):
     #         rows = query_job.result()  # Waits for query to finish
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/ratatouille-ai-e6daa9d44a92.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/aitouille-adam.json"
 client = bq.Client()
 
 with open('recipes_for_import.csv', encoding='utf8') as file:

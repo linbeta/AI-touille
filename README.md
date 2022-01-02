@@ -122,9 +122,9 @@ export LINE_CHANNEL_ACCESS_TOKEN="這邊去LINE後台複製token"
 
 export LINE_CHANNEL_SECRET="貼上要用的secrete"
 
-export USER_INFO_TEMP_BUCKET_NAME="temp_food_image_mvp"
+export USER_INFO_TEMP_BUCKET_NAME="temp_food_image"
 
-export FOOD_IMAGE_BUCKET_NAME="food-image-mvp"
+export FOOD_IMAGE_BUCKET_NAME="ai-touille-food-image"
 ```
 
 ### 連線鑰匙
