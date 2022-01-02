@@ -101,7 +101,7 @@ class LineBotController:
                 把此食譜寫入使用者喜歡的食譜list裡
             '''
             Query = (
-                f"Select id from `ratatouille-ai.recipebot.user_recipe` "
+                f"Select id from `aitouille-adam.recipebot.user_recipe` "
                 f"where recipe_id = {recipe_id_data} and line_user_id = '{user_id}';"
             )
             # print(Query)
@@ -114,9 +114,9 @@ class LineBotController:
             if num_results == 0:
                 # 使用者點喜歡後，將該食譜id存入user_recipe資料庫中
                 Query = (
-                    f"INSERT INTO `ratatouille-ai.recipebot.user_recipe`"
+                    f"INSERT INTO `aitouille-adam.recipebot.user_recipe`"
                     f"(`id`, `line_user_id`, `recipe_id`, `my_like`, `created_time`, `updated_time`) VALUES "
-                    f"((select count(id)+1 from ratatouille-ai.recipebot.user_recipe), "
+                    f"((select count(id)+1 from aitouille-adam.recipebot.user_recipe), "
                     f"'{user_id}', {recipe_id_data}, 'Y', (SELECT CURRENT_TIMESTAMP),(SELECT CURRENT_TIMESTAMP)); "
                 )
                 query_job = bq_client.query(Query)
@@ -138,7 +138,7 @@ class LineBotController:
             # print("Removing " + user_id + "'s favorite" )
             recipe_id_data = int(str(event.postback.data)[2:])
             Query = (
-                f"Delete `ratatouille-ai.recipebot.user_recipe` "
+                f"Delete `aitouille-adam.recipebot.user_recipe` "
                 f"where recipe_id = {recipe_id_data} and line_user_id = '{user_id}';"
             )
             # print(Query)
