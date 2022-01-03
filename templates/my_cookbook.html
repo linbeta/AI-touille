@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/font-awesome/font-awesome.min.css">
     <title>查詢結果</title>
 </head>
 
@@ -20,7 +21,7 @@
             <div class="recipe">
                 <form action="" method="post" id="{{ search_result[item]['recipe_id'] }}">
                     <a href="{{search_result[item]['recipe_url']}}">{{ search_result[item]['recipe_name'] }}</a>
-                    <input type="submit" value="取消收藏" class="btn btn-primary"
+                    <input type="submit" value="—" class="btn"
                         name="{{ search_result[item]['recipe_id'] }}" style="float: right">
                 </form>
             </div>

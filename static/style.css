@@ -28,7 +28,16 @@ p {
 
 .btn {
     overflow: hidden;
-    width: 100px;
+    width: 40px;
+    border: 3px solid lightblue;
+    background-color: dodgerblue;
+    color: white;
+    padding-right: 30px;
+}
+
+.btn:hover {
+    color: white;
+    background-color: rgb(15, 96, 218);
 }
 
 .container-sm {
