@@ -26,6 +26,11 @@ p {
     font-size: 0.9rem;
 }
 
+.my {
+    background-color: orange;
+    border-radius: 8px;
+}
+
 .btn {
     overflow: hidden;
     width: 40px;
@@ -55,6 +60,9 @@ p {
     padding-left: 0;
     padding-right: 0;
     line-height: 3rem;
+    text-decoration: none;
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 2px;
 }
 
 .backButton {

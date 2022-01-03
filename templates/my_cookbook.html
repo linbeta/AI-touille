@@ -16,11 +16,11 @@
 <body>
     <div class="container">
         <div class="container-sm custom-center">
-            <h2>{{ nickname }} 收藏的食譜</h2>
+            <h2 class="my">{{ nickname }} 收藏的食譜</h2>
             {% for item in search_result %}
-            <div class="recipe">
+            <div>
                 <form action="" method="post" id="{{ search_result[item]['recipe_id'] }}">
-                    <a href="{{search_result[item]['recipe_url']}}">{{ search_result[item]['recipe_name'] }}</a>
+                    <a class="recipe" href="{{search_result[item]['recipe_url']}}">{{ search_result[item]['recipe_name'] }}</a>
                     <input type="submit" value="—" class="btn"
                         name="{{ search_result[item]['recipe_id'] }}" style="float: right">
                 </form>
