@@ -12,7 +12,6 @@ google-cloud-logging
 tensorflow-cpu == 2.7.0
 Pillow
 flask_ngrok
-Pillow
 google-cloud-bigquery
 google-cloud-bigquery-storage
 BigQuery-Python
