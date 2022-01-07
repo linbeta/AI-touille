@@ -4,6 +4,8 @@ AI-touille 愛廚易 Line Bot AI 機器人讓您可以藉由直接拍照、挑�
 
 官網圖文介紹：https://home.ai-touille.fun/
 
+專案發表簡報影片：https://reurl.cc/rQa1Qy
+
 掃描 QR-Code 加好友：
 
 ID: @096oeofl
@@ -12,6 +14,8 @@ ID: @096oeofl
 
 
 ## 版本更新紀錄
+
+```v3.1.4``` 收藏的食譜頁版面更新
 
 ```v3.1.0``` 收藏的食譜頁可取消收藏
 
@@ -80,11 +84,11 @@ LINE_CHANNEL_ACCESS_TOKEN
 
 LINE_CHANNEL_SECRET
 
-USER_INFO_TEMP_BUCKET_NAME：存到 temp_food_image_mvp 這個 bucket
+USER_INFO_TEMP_BUCKET_NAME：存到 temp_food_image 這個 bucket
 
-FOOD_IMAGE_BUCKET_NAME：存到 food-image-mvp 這個 bucket
+FOOD_IMAGE_BUCKET_NAME：存到 ai-touille-food-image 這個 bucket
 
-GOOGLE_APPLICATION_CREDENTIALS: 設定存鑰匙的位置為 keys/ratatouille-ai-e6daa9d44a92.json
+GOOGLE_APPLICATION_CREDENTIALS: 設定存鑰匙的位置為 keys/aitouille-adam.json
 
 LIFF_ID: 登入LINE Developer查看要串接的LINE login裡面的LIFF ID
 ```
