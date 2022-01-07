@@ -43,7 +43,7 @@ class TextService:
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(f"我收藏的食譜: https://ai-touille-6qzlayuaza-de.a.run.app/my_cookbook/{user_id}")
-                # TextSendMessage(f"我收藏的食譜: https://e8bb-180-218-204-111.ngrok.io/my_cookbook/{user_id}")
+                # TextSendMessage(f"我收藏的食譜: https://8a57-180-218-204-111.ngrok.io/my_cookbook/{user_id}")
             )
         # TODO: 施工區:處理官網留言
         elif user_message[:3] == "###":
