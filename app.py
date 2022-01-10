@@ -161,12 +161,12 @@ def handle_postback_event(event):
 
 
 # =================== LIFF靜態頁面(始) ===================
-# liffid = os.environ["LIFF_ID"]
-# @app.route('/form')
-# def form():
-#     # data = request.get_data()
-#     # print(data)
-#     return render_template('form.html', myliffid=liffid)
+liffid = os.environ["LIFF_ID"]
+@app.route('/form')
+def form():
+    # data = request.get_data()
+    # print(data)
+    return render_template('form.html', myliffid=liffid)
 
 
 # @handler.add(MessageEvent, message=TextMessage)
