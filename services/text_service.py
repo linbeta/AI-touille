@@ -147,7 +147,7 @@ class TextService:
             result = "你可以傳食材照片或是用打字的告訴我你有哪些食材，我會推薦適合的食譜給你，開啟麥克風傳語音訊息也可以喔！"
         # TODO: 可以針對Give feedback做另外的對話處理
         elif intent == "give_feedback":
-            result = "好的，請說 😊"
+            result = "好的，請說 😊 https://liff.line.me/1656700369-MrdvmrAb"
         else:
             result = "收到~ 更多功能開發中，敬請期待未來的AI服務！"
 
