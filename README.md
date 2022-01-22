@@ -145,6 +145,17 @@ export FOOD_IMAGE_BUCKET_NAME="ai-touille-food-image"
 ### bigquery資料移轉
 若要把資料集當中的table複製到另一個資料集, "資料位置"要一樣. e.g. asia-east1 or US
 
+### Cloud Run 快速部署
+使用以下指令可以自動 build 好新的 container，並自動更新最新的image並完成部署。
+```
+gcloud run deploy
+```
+如果初次操作，執行指令後記得點選確認訊息，基本上都選 yes(Y)
+
+跳出地區選項時請選 [1] asia-east1 即可。
+
+### CI/CD (TODO)
+自動部署的觸發條件還有些問題待解決，未來設定完成後最好可以自動化完成部署更新。
 
 ### 參考資料
 1. [flask-ngrok GitHub issue: Virtualenv support #2 討論串](https://github.com/gstaff/flask-ngrok/issues/2)
