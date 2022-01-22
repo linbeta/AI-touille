@@ -18,7 +18,8 @@
         <textarea name="message" id="comment" class="form-control" rows="8" cols="35"
                   placeholder="如果希望收到我們的回覆，請記得附上您的email或其他聯絡方式:D"></textarea>
         <br/>
-        <button class="btn btn-success btn-block" id="sure" onclick="pushMsg()">確定</button>
+<!--        <button class="btn btn-success btn-block" id="sure" onclick="pushMsg()">確定</button>-->
+        <button class="btn btn-success btn-block" id="sure">確定</button>
     </div>
 </div>
 
@@ -28,7 +29,7 @@
         function initializeLiff(myLiffId) {
             liff.init({
             liffId: myLiffId,
-<!--            withLoginOnExternalBrowser: true,-->
+            withLoginOnExternalBrowser: true,
             });
         }
 

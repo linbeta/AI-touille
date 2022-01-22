@@ -12,14 +12,13 @@ from linebot import (
 import os
 import random
 import jieba
-from daos.user_dao import UserDAO
 from linebot.models import (
-    TextSendMessage, CarouselTemplate, CarouselColumn, URITemplateAction, PostbackAction, TemplateSendMessage,
-    MessageTemplateAction
+    TextSendMessage, CarouselTemplate, CarouselColumn, URITemplateAction, PostbackAction, TemplateSendMessage
 )
 # 搜尋食譜
-
+from services.user_service import UserService
 from utils.search_recipe import multiple_ingredient_search
+from utils.send_email import send_email
 
 
 class TextService:
@@ -43,20 +42,26 @@ class TextService:
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(f"我收藏的食譜: https://ai-touille-6qzlayuaza-de.a.run.app/my_cookbook/{user_id}")
-                # TextSendMessage(f"我收藏的食譜: https://8a57-180-218-204-111.ngrok.io/my_cookbook/{user_id}")
+                # TextSendMessage(f"我收藏的食譜: https://1854-180-218-204-111.ngrok.io/my_cookbook/{user_id}")
             )
-        # TODO: 施工區:處理官網留言
+        # 處理官網&form留言
         elif user_message[:3] == "###":
-            print("this is a message form")
-            msg = cls.manageForm(user_message)
+            # 取得用戶名字
+            user_object = UserService.get_user(event.source.user_id)
+            user_nickname = user_object.line_user_nickname
+            # print("this is a message form")
+            # 處理成易讀的格式回覆用戶收到訊息
+            msg = cls.manageForm(mtext=user_message)
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 msg
             )
+            # 寄信到客服信箱
+            send_email(msg=user_message[3:], user_nickname=user_nickname)
         else:
             ingredients = cls.get_ingredients(user_message)
             if len(ingredients) == 0:
-                # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+                # 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
                 reply_message = cls.get_intent(user_message)
                 cls.line_bot_api.reply_message(
                     event.reply_token,
@@ -75,6 +80,20 @@ class TextService:
                     event.reply_token,
                     new_template
                 )
+
+    @classmethod
+    def manageForm(cls, mtext):
+        try:
+            flist = mtext[3:].split('/')
+            text = '姓名：' + flist[0] + '\n'
+            text += '建議：' + flist[1] + '\n'
+            text += '感謝您的留言，我們已經收到囉！😃'
+            message = TextSendMessage(
+                text=text
+            )
+            return message
+        except:
+            return "發生錯誤！"
 
     # 用結巴分詞抓出資料庫中有的食材的新方法
     @classmethod
@@ -147,7 +166,9 @@ class TextService:
             result = "你可以傳食材照片或是用打字的告訴我你有哪些食材，我會推薦適合的食譜給你，開啟麥克風傳語音訊息也可以喔！"
         # TODO: 可以針對Give feedback做另外的對話處理
         elif intent == "give_feedback":
-            result = "好的，請說 😊 https://liff.line.me/1656700369-MrdvmrAb"
+            result = "好的，請說 😊 https://liff.line.me/1656700369-9wG4ra7O"
+        elif intent == "":
+            result = "聽不到你的聲音喔！"
         else:
             result = "收到~ 更多功能開發中，敬請期待未來的AI服務！"
 
@@ -198,9 +219,11 @@ class TextService:
                     label='沒有我要的食譜',
                     uri='https://icook.tw/'  # TODO 這邊先放icook的連結
                 ),
-                MessageTemplateAction(
+                URITemplateAction(
                     label='給建議',
-                    text='我要留言'
+                    # uri='https://liff.line.me/1656700369-MrdvmrAb' # 愛廚易官方留言form的LIFF URL
+                    # 開發版，串到Beta的機器人
+                    uri='https://liff.line.me/1656700369-9wG4ra7O'
                 )
             ]
         )
@@ -230,16 +253,3 @@ class TextService:
         ]
         random.shuffle(tips)
         return tips[0]
-
-    @classmethod
-    def manageForm(cls, mtext):
-        try:
-            flist = mtext[3:].split('/')
-            text1 = '姓名：' + flist[0] + '\n'
-            text1 += '建議：' + flist[1]
-            message = TextSendMessage(
-                text=text1
-            )
-            return message
-        except:
-            return "發生錯誤！"
