@@ -9,15 +9,12 @@
 '''
 
 from linebot import (
-    LineBotApi, WebhookHandler
+    LineBotApi
 )
 from linebot.models import TextSendMessage
 import os
 
 # 載入Follow事件
-from linebot.models.events import (
-    FollowEvent, UnfollowEvent, PostbackEvent
-)
 
 line_bot_api = LineBotApi(channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 
@@ -26,14 +23,11 @@ from services.user_service import UserService
 from services.video_service import VideoService
 from services.audio_service import AudioService
 from services.text_service import TextService
-from services.email_sevice import EmailService
 
 from google.cloud import bigquery as bq
 import os
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/aitouille-adam.json"
-
-from urllib.parse import parse_qs
 
 bq_client = bq.Client()
 
@@ -73,16 +67,7 @@ class LineBotController:
     def handle_audio_message(cls, event):
         AudioService.line_user_upload_audio(event)
         return "OK"
-    # ================== 施工區分隔線 ======================
-    # 2021/12/24 USER留言轉寄EMAIL
 
-    @classmethod
-    def handle_user_message(cls, event):
-        EmailService.line_user_leave_message(event)
-        return "OK"
-
-    # ================== 施工區分隔線 ======================
-    # 2021/12/21 Charles
     @classmethod
     def handle_postback_event(cls, event):
         # 寫一個判斷處理給建議的postback data: 因為處理格式不同會出錯，需另外處理(暫時先用MessageTemplateAction，待處理)

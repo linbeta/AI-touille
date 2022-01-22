@@ -9,7 +9,7 @@ CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 ## ========== 新增 Rich menus，並透過line API 取得 rich_menu_link ==========
 ## (! 配合圖片格式修改參數)
 
-import requests , json
+import requests, json
 
 headers = {"Authorization":"Bearer "+CHANNEL_ACCESS_TOKEN,"Content-Type":"application/json"}
 
@@ -24,22 +24,27 @@ body = {
           "action": {"type": "uri", "uri": "https://line.me/R/nv/camera/"}
         },
         {
-          "bounds": {"x": 625, "y": 0, "width": 625, "height": 635},
+          "bounds": {"x": 500, "y": 0, "width": 625, "height": 635},
           "action": {"type": "uri", "uri": "https://line.me/R/nv/cameraRoll/multi"},
         },
+        # TODO: 先傳文字開啟收藏的食譜，之後改用Postback試試看藏網址直接開網頁
         {
-          "bounds": {"x": 1250, "y": 0, "width": 625, "height": 635},
+          "bounds": {"x": 1000, "y": 0, "width": 625, "height": 635},
+          "action": {"type": "message", "text": "收藏的食譜"},
+        },
+        {
+          "bounds": {"x": 1500, "y": 0, "width": 625, "height": 635},
           "action": {"type": "uri", "uri": "https://line.me/R/nv/recommendOA/@096oeofl"}
         },
         {
-          "bounds": {"x": 1875, "y": 0, "width": 625, "height": 635},
+          "bounds": {"x": 2000, "y": 0, "width": 625, "height": 635},
           "action": {"type": "uri", "uri": "https://liff.line.me/1656700369-VlnBxlo4"}
         }
     ]
   }
 
 req = requests.request('POST', 'https://api.line.me/v2/bot/richmenu',
-                       headers=headers,data=json.dumps(body).encode('utf-8'))
+                       headers=headers, data=json.dumps(body).encode('utf-8'))
 
 richmenuId = json.loads(req.text).get("richMenuId")
 
@@ -52,7 +57,7 @@ from linebot import (LineBotApi)
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 
 ## (! 配合圖片修改檔名"richmenu.jpg"及圖片形式"image/jpeg")
-with open("pic/richmenu.jpg",'rb') as f:
+with open("pic/richmenu_5.jpg",'rb') as f:
     line_bot_api.set_rich_menu_image(richmenuId, "image/jpeg", f)
 
 
@@ -63,7 +68,7 @@ headers = {"Authorization":"Bearer "+CHANNEL_ACCESS_TOKEN,"Content-Type":"applic
 
 req = requests.request('POST', 'https://api.line.me/v2/bot/user/all/richmenu/'+richmenuId,
                        headers=headers)
-print(req.text)
+# print(req.text)
 
 
 # # ========== 查看所有 Rich menus(最多100組) ==========

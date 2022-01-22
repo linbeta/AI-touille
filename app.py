@@ -39,6 +39,7 @@ line_bot_api = LineBotApi(
     channel_access_token=os.environ["LINE_CHANNEL_ACCESS_TOKEN"])
 handler = WebhookHandler(channel_secret=os.environ["LINE_CHANNEL_SECRET"])
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "keys/aitouille-adam.json"
+# EMAIL_PW = os.environ["GMAIL_PASSWORD"]
 
 # 載入Follow事件
 from linebot.models.events import (
@@ -167,19 +168,6 @@ def form():
     # data = request.get_data()
     # print(data)
     return render_template('form.html', myliffid=liffid)
-
-
-# @handler.add(MessageEvent, message=TextMessage)
-# def handle_message(event):
-#     mtext = event.message.text
-#     if mtext == '@彈性配置':
-#         sendFlex(event)
-#
-#     elif mtext[:3] == '###' and len(mtext) > 3:
-#          manageForm(event, mtext)
-
-
-
 
 # =================== LIFF靜態頁面(終) ===================
 

@@ -1,5 +1,3 @@
-# 修改紀錄：
-# 2021/12/21 Charles
 '''
 用戶上傳音訊檔時，將音訊檔從Line取回，轉成文字訊息，
 並將音訊檔放入CloudStorage
@@ -67,10 +65,10 @@ class AudioService:
         # 從雲端取值的作法
         gcs_uri = 'gs://' + bucket_name + '/' + destination_blob_name
         audio = speech.RecognitionAudio(uri=gcs_uri)
-
+        reply_transcript = ""
         config = speech.RecognitionConfig(
             {
-                "encoding": speech.RecognitionConfig.AudioEncoding.MP3,  # 這邊卡關超久, 官方文件這邊有說明MP3檔要使用v1p1beta版本才行
+                "encoding": speech.RecognitionConfig.AudioEncoding.MP3,  # 官方文件這邊有說明MP3檔要使用v1p1beta版本才行
                 "sample_rate_hertz": 16000,
                 "language_code": "zh-TW"
             }
@@ -83,34 +81,20 @@ class AudioService:
         # 移除本地檔案
         os.remove(temp_file_path)
 
-        # option:1 ----- 將reply_transcript截取出食材，把每一個食材分別進資料庫做搜尋 ------ #
-
-        # test_voice_input = "我有雞肉白蘿蔔香菇玉米洋蔥，可以煮什麼？"
-        # utils.text_parsing裡面的方法，將一句話裡面有的食材切出來回傳一個list
-
         # 引用utils/text_parsing.py裡面的方法來把食材切出來
         ingredients_from_audio = TextService.get_ingredients(reply_transcript)
-
+        # print(ingredients_from_audio)
         reply_msg = [TextSendMessage(f"語音輸入： {reply_transcript}")]
 
         if len(ingredients_from_audio) == 0:
-            # TODO: 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
+            # 如果user傳來的文字訊息不包含可辨識的食材，回覆user一句話
             reply_message = TextService.get_intent(reply_transcript)
             cls.line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(reply_message)
             )
         else:
-            # TODO ~~~~~~~~~~~~~~~~~開發中 以下為原版~~~~~~~~~~~~~~~~~~~~~~~
-            # TODO: 串接資料庫->複數食材搜尋
-            # dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio))
-            # reply_msg += dishes
-            # # 回覆訊息給使用者
-            # cls.line_bot_api.reply_message(
-            #     event.reply_token,
-            #     reply_msg
-            # )
-            # TODO: 串接資料庫->複數食材搜尋
+            # 串接資料庫->複數食材搜尋
             # 2021/12/21 Charles 新增user_id參數
             dishes = multiple_ingredient_search(ingredients_from_audio, len(ingredients_from_audio), event.source.user_id)
             new_template = TextService.make_template(dishes)
@@ -119,5 +103,3 @@ class AudioService:
                 event.reply_token,
                 reply_msg
             )
-
-        # option:2 ----- 將reply_transcript截取出食材，進資料庫做複數食材搜尋 ------ #
